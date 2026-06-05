@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics Grand Test Simulator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Custom scrollbars for the application panes */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .bubble-transition {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<!-- On desktop (lg+), the body locks to the screen height to prevent window scrolling -->
+<body class="bg-slate-50 text-slate-800 min-h-screen lg:h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white lg:overflow-hidden">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm shrink-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md shadow-indigo-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">Statistics Grand Test</h1>
+          <p class="text-xs text-slate-500 mt-1">150 MCQs • NCERT + PYQs Complete Syllabus</p>
+        </div>
+      </div>
+      
+      <!-- Right-side status and indicators -->
+      <div class="flex items-center gap-4">
+        <!-- Study mode toggle -->
+        <div class="hidden sm:flex items-center bg-slate-100 p-1.5 rounded-xl gap-1" id="modeContainer">
+          <button id="btnTestMode" onclick="toggleStudyMode(false)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bubble-transition shadow-sm bg-white text-slate-700">
+            🏆 Test Mode
+          </button>
+          <button id="btnStudyMode" onclick="toggleStudyMode(true)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bubble-transition text-slate-500">
+            💡 Study Mode
+          </button>
+        </div>
+
+        <!-- Session timer -->
+        <div class="bg-slate-100 px-4 py-2 rounded-xl flex items-center gap-2 border border-slate-200" id="timerBox">
+          <svg class="w-4 h-4 text-slate-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span id="txtTimer" class="font-mono font-bold text-slate-700 text-sm">150:00</span>
+          <button id="btnPause" onclick="togglePause()" class="p-1 hover:bg-slate-200 rounded-lg text-slate-600 transition" title="Pause/Play Timer">
+            <svg class="w-4 h-4" id="pauseIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path>
+            </svg>
+          </button>
+        </div>
+
+        <button onclick="confirmSubmit()" class="bg-rose-600 text-white font-semibold text-sm px-4 py-2 rounded-xl hover:bg-rose-700 shadow-md shadow-rose-100 transition duration-150 flex items-center gap-1.5">
+          Submit Test
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress bar tracker -->
+  <div class="bg-white border-b border-slate-200/80 sticky top-16 z-20 shrink-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-3 w-full sm:w-2/3">
+        <span class="font-medium text-slate-600 shrink-0">Progress: <strong id="progressText" class="text-indigo-600">0/150</strong></span>
+        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+          <div id="progressBar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between sm:justify-end gap-4 shrink-0 font-medium text-slate-500">
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Answered</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Flagged</span>
+        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> Unvisited</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Main Layout (Flex-1 allows it to take remaining screen height) -->
+  <main class="flex-grow lg:flex-1 lg:min-h-0 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6 relative" id="testDashboard">
+    
+    <!-- Left Navigation Area / Question Screen -->
+    <div class="w-full lg:w-2/3 flex flex-col gap-5 lg:overflow-y-auto lg:pr-2 pb-4" id="leftQuestionPanel">
+      <!-- Info Alert Box -->
+      <div id="studyModeBanner" class="hidden shrink-0 bg-emerald-50 border border-emerald-100 p-3 rounded-2xl flex items-center gap-3 text-emerald-800 text-xs">
+        <span class="p-1.5 bg-emerald-100 text-emerald-700 rounded-lg">💡</span>
+        <p><strong>Study Mode Active:</strong> Correct answers and explanations will appear immediately after choosing an answer.</p>
+      </div>
+
+      <!-- Question Card -->
+      <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 sm:p-8 flex flex-col gap-6 relative shrink-0" id="questionCard">
+        <!-- Topic Badge and Navigation -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span id="badgeCategory" class="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-xl text-xs font-semibold tracking-wide">
+              CENSUS
+            </span>
+            <span id="badgeQuestionNum" class="px-2 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">
+              Q 1 of 150
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <!-- Bookmark Button -->
+            <button onclick="toggleBookmark()" id="btnBookmark" class="p-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-amber-500 transition" title="Bookmark Question">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="bookmarkIcon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+              </svg>
+            </button>
+            <!-- Flag Button -->
+            <button onclick="toggleFlag()" id="btnFlag" class="p-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-amber-600 transition" title="Flag for Review">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="flagIcon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Text -->
+        <div class="space-y-3">
+          <h2 id="questionText" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed">
+            Census means:
+          </h2>
+        </div>
+
+        <!-- Options Container -->
+        <div class="grid grid-cols-1 gap-3.5" id="optionsContainer">
+          <!-- Dynamically generated buttons here -->
+        </div>
+
+        <!-- Explanation Block (Shown only in Study Mode or Post-test) -->
+        <div id="explanationBox" class="hidden border border-indigo-100 bg-indigo-50/30 p-5 rounded-2xl flex gap-3 text-slate-700">
+          <span class="text-xl shrink-0">📖</span>
+          <div class="space-y-1 text-sm">
+            <h4 class="font-bold text-slate-900">Explanation</h4>
+            <p id="explanationText" class="leading-relaxed text-slate-600">Census refers to a complete enumeration of all units within the given target population.</p>
+          </div>
+        </div>
+
+        <!-- Navigation buttons -->
+        <div class="flex items-center justify-between border-t border-slate-100 pt-6 mt-4">
+          <button onclick="navigateQuestion(-1)" id="btnPrev" class="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 text-sm font-semibold transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous
+          </button>
+          <button onclick="clearCurrentAnswer()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline">
+            Clear Answer
+          </button>
+          <button onclick="navigateQuestion(1)" id="btnNext" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition flex items-center gap-1.5 shadow-md shadow-indigo-100">
+            Next
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Bubble Sheet Grid Navigator -->
+    <div class="w-full lg:w-1/3 flex flex-col gap-5 lg:min-h-0">
+      <!-- Quick Info / Stats -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4 shrink-0">
+        <h3 class="font-bold text-sm text-slate-900 tracking-tight flex items-center gap-2">
+          <span>🎯</span> Topic Navigator
+        </h3>
+        <!-- Filter topics -->
+        <div class="grid grid-cols-2 gap-1.5">
+          <button onclick="filterByTopic('all')" id="filterBtn_all" class="text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-200 bg-slate-900 text-white transition">
+            All (150)
+          </button>
+          <button onclick="filterByTopic('Census')" id="filterBtn_Census" class="text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-600 transition">
+            Census (1-30)
+          </button>
+          <button onclick="filterByTopic('Sampling')" id="filterBtn_Sampling" class="text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-600 transition">
+            Sampling (31-60)
+          </button>
+          <button onclick="filterByTopic('Errors')" id="filterBtn_Errors" class="text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-600 transition">
+            Errors (61-90)
+          </button>
+          <button onclick="filterByTopic('Organization')" id="filterBtn_Organization" class="text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-600 transition">
+            Organization (91-120)
+          </button>
+          <button onclick="filterByTopic('Classification')" id="filterBtn_Classification" class="text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-100 hover:bg-slate-50 text-slate-600 transition">
+            Classification (121-150)
+          </button>
+        </div>
+      </div>
+
+      <!-- Bubble Grid Sheet -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex flex-col gap-4 lg:flex-1 lg:min-h-0">
+        <div class="flex items-center justify-between shrink-0">
+          <h3 class="font-bold text-sm text-slate-900 tracking-tight flex items-center gap-2">
+            <span>📋</span> Answer Sheet
+          </h3>
+          <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-md font-semibold" id="gridCount">Showing 150</span>
+        </div>
+        
+        <!-- Search bar -->
+        <div class="relative shrink-0">
+          <input type="text" id="searchBar" oninput="handleSearch()" placeholder="Search questions..." class="w-full text-xs pl-8 pr-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
+        <!-- Actual Grid container -->
+        <div id="bubbleGrid" class="grid grid-cols-6 sm:grid-cols-10 lg:grid-cols-6 xl:grid-cols-8 gap-1.5 max-h-[350px] lg:max-h-none lg:flex-1 overflow-y-auto pr-1">
+          <!-- Dynamic bubbles go here -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Interactive Result Dashboard Panel -->
+  <main class="hidden flex-grow lg:flex-1 lg:min-h-0 lg:overflow-y-auto max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-col gap-8 pb-12" id="resultDashboard">
+    
+    <!-- Top banner performance card -->
+    <div class="bg-gradient-to-tr from-indigo-900 via-indigo-950 to-slate-900 rounded-[32px] p-8 text-white shadow-xl shadow-slate-200 relative overflow-hidden shrink-0">
+      <!-- Decorative vector mesh inside banner -->
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.25),transparent_60%)] pointer-events-none"></div>
+      
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <span id="resultRankBadge" class="bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 font-bold text-xs tracking-wider uppercase px-4 py-1.5 rounded-full inline-block">
+            UPSC/NET Ready
+          </span>
+          <h2 class="text-3xl font-extrabold tracking-tight">Your Performance Report</h2>
+          <p class="text-indigo-200 text-sm max-w-md">Excellent work! This diagnostics assessment covers key statistics patterns. Below is your detailed breakdown.</p>
+        </div>
+
+        <!-- Big Score Wheel -->
+        <div class="flex items-center gap-5 shrink-0 bg-white/5 border border-white/10 p-5 rounded-3xl backdrop-blur-md">
+          <div class="text-center">
+            <div class="text-5xl font-black text-indigo-400" id="resultScore">142</div>
+            <div class="text-[10px] uppercase font-bold tracking-wider text-indigo-200 mt-1">Final Score</div>
+          </div>
+          <div class="h-12 w-px bg-white/10"></div>
+          <div class="text-center">
+            <div class="text-5xl font-black text-emerald-400" id="resultAccuracy">94.6%</div>
+            <div class="text-[10px] uppercase font-bold tracking-wider text-indigo-200 mt-1">Accuracy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 shrink-0">
+      <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm text-center">
+        <p class="text-xs text-slate-500 font-medium">Time Taken</p>
+        <p class="text-2xl font-extrabold text-slate-800 mt-1" id="resultTime">24:12</p>
+      </div>
+      <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm text-center">
+        <p class="text-xs text-slate-500 font-medium">Correct Questions</p>
+        <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="resultCorrect">142</p>
+      </div>
+      <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm text-center">
+        <p class="text-xs text-slate-500 font-medium">Incorrect Questions</p>
+        <p class="text-2xl font-extrabold text-rose-600 mt-1" id="resultIncorrect">8</p>
+      </div>
+      <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm text-center">
+        <p class="text-xs text-slate-500 font-medium">Unanswered Questions</p>
+        <p class="text-2xl font-extrabold text-amber-500 mt-1" id="resultUnanswered">0</p>
+      </div>
+    </div>
+
+    <!-- Topic Breakdown Card -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6 shrink-0">
+      <h3 class="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+        <span>📊</span> Sectional Mastery Breakdown
+      </h3>
+      
+      <div class="space-y-4" id="topicProgressBars">
+        <!-- Dyn. generated progress lines with percentage mastery -->
+      </div>
+    </div>
+
+    <!-- Review Block with filter options -->
+    <div class="space-y-5 shrink-0">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900 tracking-tight">Question-by-Question Review</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Filter answers to inspect correct logic, formulas, and explanations.</p>
+        </div>
+        <!-- Filtering buttons -->
+        <div class="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold gap-1 shrink-0 overflow-x-auto max-w-full" id="reviewFilterBtns">
+          <button onclick="filterReviewList('all')" id="revFilterBtn_all" class="px-3 py-1.5 rounded-lg shadow-sm bg-white text-slate-800 whitespace-nowrap">All</button>
+          <button onclick="filterReviewList('correct')" id="revFilterBtn_correct" class="px-3 py-1.5 rounded-lg text-emerald-700 hover:bg-emerald-50 whitespace-nowrap">Correct</button>
+          <button onclick="filterReviewList('incorrect')" id="revFilterBtn_incorrect" class="px-3 py-1.5 rounded-lg text-rose-700 hover:bg-rose-50 whitespace-nowrap">Incorrect</button>
+          <button onclick="filterReviewList('unanswered')" id="revFilterBtn_unanswered" class="px-3 py-1.5 rounded-lg text-amber-700 hover:bg-amber-50 whitespace-nowrap">Unanswered</button>
+        </div>
+      </div>
+
+      <!-- Container of all Review Cards -->
+      <div class="space-y-4" id="reviewCardsContainer">
+        <!-- Generated inside JS -->
+      </div>
+    </div>
+
+    <div class="flex justify-center pt-4 pb-8">
+      <button onclick="restartTest()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition shadow-md shadow-indigo-100 flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H18M9 9l3-3 3 3"></path>
+        </svg>
+        Restart/Retake Grand Test
+      </button>
+    </div>
+  </main>
+
+  <!-- Confirm Submit Modal Overlay -->
+  <div id="submitModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-3xl p-6 shadow-xl border border-slate-200 flex flex-col gap-4 text-center">
+      <div class="w-12 h-12 bg-amber-50 border border-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto text-xl">
+        ⚠️
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-lg font-bold text-slate-900">Finish and Submit?</h3>
+        <p class="text-xs text-slate-500">Are you sure you want to finish the test? You will see your breakdown instantly.</p>
+      </div>
+      <!-- Quick checklist info inside modal -->
+      <div class="bg-slate-50 p-3 rounded-2xl text-left text-xs text-slate-600 space-y-1">
+        <div class="flex justify-between"><span>Total Questions:</span> <strong class="text-slate-800">150</strong></div>
+        <div class="flex justify-between"><span>Answered:</span> <strong class="text-indigo-600" id="modalAnsweredCount">0</strong></div>
+        <div class="flex justify-between"><span>Flagged for Review:</span> <strong class="text-amber-500" id="modalFlaggedCount">0</strong></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-2">
+        <button onclick="closeSubmitModal()" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold text-slate-600">
+          No, Back to Test
+        </button>
+        <button onclick="submitDiagnostics()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100">
+          Yes, Submit Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 shrink-0 mt-auto py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-400">
+      Statistics Grand Test Practice Engine • Created according to NCERT Standards and UPSC/NET Level Requirements.
+    </div>
+  </footer>
+
+  <!-- Question Database Compilation -->
+  <script>
+    const QUESTIONS_DATA = [
+      // SET 1: CENSUS (1-30)
+      { id: 1, topic: "Census", q: "Census means:", options: { A: "Sample Survey", B: "Complete Enumeration", C: "Observation", D: "Experiment" }, ans: "B", explain: "A population census constitutes a complete enumeration of all demographic units in the defined territory." },
+      { id: 2, topic: "Census", q: "Census covers:", options: { A: "Sample", B: "Selected Units", C: "Entire Population", D: "Households Only" }, ans: "C", explain: "By definition, a census provides 100% complete coverage of the entire population." },
+      { id: 3, topic: "Census", q: "Essential feature of Census:", options: { A: "Universality", B: "Simultaneity", C: "Periodicity", D: "All" }, ans: "D", explain: "Universality (complete coverage), Simultaneity (same reference date), and Periodicity (regular intervals) are all essential criteria of a modern census." },
+      { id: 4, topic: "Census", q: "Universality means:", options: { A: "Same Date", B: "Whole Population Covered", C: "Fixed Interval", D: "None" }, ans: "B", explain: "Universality guarantees that every single individual present inside the national limits is enumerated." },
+      { id: 5, topic: "Census", q: "Simultaneity means:", options: { A: "Same Reference Date", B: "Sampling", C: "Classification", D: "None" }, ans: "A", explain: "Simultaneity ensures that data collected from all geographical segments corresponds to a single fixed point in time." },
+      { id: 6, topic: "Census", q: "Periodicity means:", options: { A: "Fixed Intervals", B: "Daily Survey", C: "Weekly Survey", D: "Random Survey" }, ans: "A", explain: "Periodicity implies that the census exercise should be executed repeatedly at fixed cycles (usually 10 years)." },
+      { id: 7, topic: "Census", q: "Individual Enumeration means:", options: { A: "Family Count", B: "Village Count", C: "Person-wise Count", D: "Sample Count" }, ans: "C", explain: "Each individual must be recorded as an independent, individual unit rather than just aggregating aggregate group data." },
+      { id: 8, topic: "Census", q: "Census in India is generally conducted every:", options: { A: "5", B: "8", C: "10", D: "15 years" }, ans: "C", explain: "Since 1881, standard Indian decennial censuses have occurred every 10 years." },
+      { id: 9, topic: "Census", q: "First complete synchronous Census in India was conducted in:", options: { A: "1872", B: "1881", C: "1901", D: "1951" }, ans: "B", explain: "While the initial non-synchronous effort occurred in 1872 under Lord Mayo, the first complete decennial census of India began in 1881." },
+      { id: 10, topic: "Census", q: "Census is usually characterized as:", options: { A: "Cheap", B: "Costly", C: "Quick", D: "Random" }, ans: "B", explain: "Relying on thousands of physical enumerators to cover every household makes the census highly expensive." },
+      { id: 11, topic: "Census", q: "Census requires:", options: { A: "Less Time", B: "More Time", C: "No Time", D: "None" }, ans: "B", explain: "Organizing logistics, visiting millions of houses, and editing datasets takes considerably more time than sample surveys." },
+      { id: 12, topic: "Census", q: "Which error is completely absent in Census operations?", options: { A: "Non-response Error", B: "Coverage Error", C: "Sampling Error", D: "Response Error" }, ans: "C", explain: "Sampling error arises only because we draw a subset of a population. Since census counts everyone, sampling error is zero." },
+      { id: 13, topic: "Census", q: "De Jure Census counts people based on their:", options: { A: "Usual Residence", B: "Present Location on Census Night", C: "Birthplace", D: "Nationality" }, ans: "A", explain: "De Jure refers to counting people according to their legal or regular place of residence." },
+      { id: 14, topic: "Census", q: "De Facto Census counts people based on their:", options: { A: "Usual Residence", B: "Present Location on Census Night", C: "Birthplace", D: "None" }, ans: "B", explain: "De Facto counts people where they are physically present at the time of enumeration, regardless of legal residency." },
+      { id: 15, topic: "Census", q: "Census data are crucial for:", options: { A: "Planning", B: "Policy Formulation", C: "Welfare Distribution", D: "All" }, ans: "D", explain: "All options represents core public sector tasks that depend heavily on precise baseline population census metrics." },
+      { id: 16, topic: "Census", q: "In India, the census is officially conducted by:", options: { A: "Government (Office of Registrar General)", B: "NGOs", C: "Academic Schools", D: "Private Firms" }, ans: "A", explain: "The Census of India is conducted under the Ministry of Home Affairs by the Office of the Registrar General and Census Commissioner." },
+      { id: 17, topic: "Census", q: "Which of the following is NOT an essential feature of a standard Census?", options: { A: "Universality", B: "Sampling Framework", C: "Simultaneity", D: "Periodicity" }, ans: "B", explain: "Census relies on comprehensive enumeration, meaning sampling frameworks are excluded." },
+      { id: 18, topic: "Census", q: "Census provides:", options: { A: "Detailed demographic micro-data", B: "Partial/fragmented approximations", C: "Rough macro estimations", D: "None" }, ans: "A", explain: "The massive scale allows the government to map micro-indicators down to individual village blocks." },
+      { id: 19, topic: "Census", q: "A comprehensive Population Census tracks and analyzes:", options: { A: "Birth rates", B: "Death rates", C: "Population migration & density", D: "All" }, ans: "D", explain: "Census tracks various metrics like age, literacy, occupation, and vital rates." },
+      { id: 20, topic: "Census", q: "Another term for a census is:", options: { A: "Sample Survey", B: "Complete Enumeration", C: "Random Survey", D: "None" }, ans: "B", explain: "Complete enumeration implies evaluating every single element in the statistical universe." },
+      { id: 21, topic: "Census", q: "The primary theoretical advantage of Census over Sampling is:", options: { A: "High Accuracy and detail", B: "Cheapness", C: "High speed of completion", D: "None" }, ans: "A", explain: "Because there is no sampling error, detailed statistics can be obtained with maximum precision." },
+      { id: 22, topic: "Census", q: "The primary limitations of Census include:", options: { A: "High cost", B: "Prolonged timeline", C: "Massive administrative manpower needs", D: "All" }, ans: "D", explain: "These combined bottlenecks are the primary reasons researchers prefer samples for recurring research." },
+      { id: 23, topic: "Census", q: "How do decennial census results assist in representative governance?", options: { A: "Delimitation of electoral constituencies", B: "Allocating central funds to states", C: "Identifying marginalized categories for welfare", D: "All" }, ans: "D", explain: "Electoral districts, fiscal allocations, and welfare strategies are direct institutional uses of decennial data." },
+      { id: 24, topic: "Census", q: "A synchronous census implies enumerating the whole population at:", options: { A: "The exact same reference period", B: "Different scattered periods", C: "Random time steps", D: "None" }, ans: "A", explain: "Synchronicity maintains the temporal uniformity of statistical snapshots." },
+      { id: 25, topic: "Census", q: "A non-synchronous census means count is taken over:", options: { A: "The same date", B: "Different dates across regions", C: "Just one local village block", D: "None" }, ans: "B", explain: "Historically, when communication was slow, different areas were surveyed on different dates." },
+      { id: 26, topic: "Census", q: "To the researchers utilizing the official published census tables, these datasets are classified as:", options: { A: "Primary Data", B: "Secondary Data", C: "Experimental Data", D: "None" }, ans: "B", explain: "Since the researcher is using already collected and published datasets, it acts as secondary data." },
+      { id: 27, topic: "Census", q: "The massive decennial exercise conducted in India is frequently cited as one of the largest:", options: { A: "Administrative and statistical operations globally", B: "Private pilot trials", C: "Local experiments", D: "None" }, ans: "A", explain: "India's massive demographic size translates to registering over 1.3+ billion individuals." },
+      { id: 28, topic: "Census", q: "Assuming zero fraud, census statistics are theoretically expected to be:", options: { A: "Highly representative of true parameters", B: "Invariably biased due to sampling logic", C: "Completely random fluctuations", D: "None" }, ans: "A", explain: "The lack of sampling bias allows accurate reflection of parameter constants." },
+      { id: 29, topic: "Census", q: "A typical census operation can be characterized as:", options: { A: "Highly comprehensive", B: "Highly costly", C: "Highly time-consuming", D: "All" }, ans: "D", explain: "These descriptive variables represent the core realities of the Census." },
+      { id: 30, topic: "Census", q: "Complete Enumeration is synonymous with:", options: { A: "Census", B: "Sampling", C: "Classification", D: "Tabulation" }, ans: "A", explain: "Complete enumeration means checking every element, which defines a census." },
+
+      // SET 2: SAMPLING (31-60)
+      { id: 31, topic: "Sampling", q: "Sampling means:", options: { A: "Investigating the whole population", B: "Investigating a part of the population to draw conclusions about the whole", C: "Relying on census reports", D: "Unstructured personal observation" }, ans: "B", explain: "Sampling is the process of examining a representative subset to infer characteristics of the larger parent group." },
+      { id: 32, topic: "Sampling", q: "A high-quality scientific sample should be:", options: { A: "Biased and fast", B: "Truly representative of the population", C: "As small as possible", D: "Drawn purely on convenience" }, ans: "B", explain: "If the sample is not representative, predictions about population parameters will be biased." },
+      { id: 33, topic: "Sampling", q: "Probability Sampling is defined by:", options: { A: "Every unit having a known, non-zero chance of selection", B: "Subjective judgment of the researcher", C: "Arbitrary convenience", D: "None" }, ans: "A", explain: "This random probability selection underpins mathematical proofs of unbiased estimation." },
+      { id: 34, topic: "Sampling", q: "The classical lottery method is a type of:", options: { A: "Simple Random Sampling", B: "Cluster Sampling", C: "Quota Sampling", D: "Snowball Sampling" }, ans: "A", explain: "Drawing tokens from a bowl gives every element an equal, fair chance of selection." },
+      { id: 35, topic: "Sampling", q: "Simple Random Sampling (SRS) falls under:", options: { A: "Probability Sampling", B: "Non-probability Sampling", C: "Census Surveys", D: "None" }, ans: "A", explain: "Every sample of size n has the exact same probability of being selected." },
+      { id: 36, topic: "Sampling", q: "Selecting every $k$-th unit from an ordered list is called:", options: { A: "Stratified Sampling", B: "Systematic Sampling", C: "Cluster Sampling", D: "Purposive Sampling" }, ans: "B", explain: "Systematic sampling is structured around a starting index plus multiples of a fixed interval step." },
+      { id: 37, topic: "Sampling", q: "The sampling interval formula is:", options: { A: "N / n", B: "n / N", C: "N + n", D: "N * n" }, ans: "A", explain: "The interval $k$ is the population size $N$ divided by the target sample size $n$." },
+      { id: 38, topic: "Sampling", q: "When a heterogeneous population is split into homogeneous layers before drawing samples, it is called:", options: { A: "Cluster Sampling", B: "Stratified Sampling", C: "Quota Sampling", D: "Purposive Sampling" }, ans: "B", explain: "Stratification ensures representation from all key subgroups of interest." },
+      { id: 39, topic: "Sampling", q: "In Stratified Sampling, elements within a single stratum should be:", options: { A: "As homogeneous as possible", B: "As heterogeneous as possible", C: "Drawn purely based on convenience", D: "None" }, ans: "A", explain: "For high precision, variation within strata should be minimized, while variation between strata should be maximized." },
+      { id: 40, topic: "Sampling", q: "If we group high, medium, and low income citizens, and draw a random sample from each category, we are using:", options: { A: "Stratified Sampling", B: "Cluster Sampling", C: "Snowball Sampling", D: "Census" }, ans: "A", explain: "Income levels act as homogeneous strata from which independent samples are drawn." },
+      { id: 41, topic: "Sampling", q: "When the population is divided into natural groups (like schools or neighborhoods) and a random sample of these whole groups is chosen, it is:", options: { A: "Stratified Sampling", B: "Cluster Sampling", C: "Quota Sampling", D: "Purposive Sampling" }, ans: "B", explain: "In cluster sampling, the primary unit is a group of elements, and we sample entire clusters." },
+      { id: 42, topic: "Sampling", q: "Cluster Sampling is highly useful when:", options: { A: "The population is widely scattered geographically", B: "The population is tiny and easily available", C: "There is no list of clusters", D: "None" }, ans: "A", explain: "It reduces travel costs by letting researchers focus on a few selected locations." },
+      { id: 43, topic: "Sampling", q: "Selecting State → District → Village → Household is an example of:", options: { A: "Multistage Sampling", B: "Simple Cluster Sampling", C: "Snowball Sampling", D: "Systematic Sampling" }, ans: "A", explain: "Multistage sampling repeats random selection across cascading levels of hierarchy." },
+      { id: 44, topic: "Sampling", q: "Purposive Sampling is characterized as:", options: { A: "Judgment-based choice of typical cases", B: "Purely random selection", D: "Census evaluation", C: "Lottery drawing" }, ans: "A", explain: "The researcher deliberately targets specific profiles that they judge to be informative." },
+      { id: 45, topic: "Sampling", q: "Convenience Sampling depends on:", options: { A: "Easily available and accessible units", B: "Rigorous random numbering", C: "Full census coverage", D: "None" }, ans: "A", explain: "It targets those nearby or easiest to reach, compromising representativeness for speed." },
+      { id: 46, topic: "Sampling", q: "Snowball Sampling relies heavily on:", options: { A: "Referrals and social chains", B: "Lottery drums", C: "Income strata", D: "Geographical clusters" }, ans: "A", explain: "Existing subjects refer future subjects, causing the sample size to grow like a rolling snowball." },
+      { id: 47, topic: "Sampling", q: "Snowball Sampling is highly effective for:", options: { A: "Hidden, marginalized, or rare populations", B: "Mass consumer public", C: "Standard student bodies", D: "None" }, ans: "A", explain: "Populations like active drug users or rare disease patients lack a public sampling list." },
+      { id: 48, topic: "Sampling", q: "Quota Sampling is a form of:", options: { A: "Probability Sampling", B: "Non-probability Sampling", C: "Census complete enumeration", D: "Random Systematic Sampling" }, ans: "B", explain: "Though it enforces target quotas for subgroups, the actual choice within subgroups is non-random." },
+      { id: 49, topic: "Sampling", q: "Which of the following is NOT a probability sampling method?", options: { A: "Stratified Sampling", B: "Cluster Sampling", C: "Convenience Sampling", D: "Systematic Sampling" }, ans: "C", explain: "Convenience sampling relies on accessibility rather than random chance." },
+      { id: 50, topic: "Sampling", q: "Which of the following is NOT a non-probability sampling method?", options: { A: "Purposive Sampling", B: "Convenience Sampling", C: "Stratified Sampling", D: "Snowball Sampling" }, ans: "C", explain: "Stratified sampling uses randomized selection from each stratum." },
+      { id: 51, topic: "Sampling", q: "A truly representative sample provides:", options: { A: "Reliable, unbiased inferences about parameters", B: "Erroneous and invalid calculations", C: "Absolute zero standard error", D: "No statistical value" }, ans: "A", explain: "Representativeness ensures sample statistics mirror population parameters." },
+      { id: 52, topic: "Sampling", q: "The primary operational benefit of sampling over census is saving:", options: { A: "Time", B: "Financial cost", C: "Administrative effort", D: "All" }, ans: "D", explain: "Sampling is faster, cheaper, and less demanding of resources." },
+      { id: 53, topic: "Sampling", q: "Sampling is preferred when:", options: { A: "The population is infinitely large", B: "Resources are highly constrained", C: "Evaluating units destroys them (e.g. testing bulbs)", D: "All" }, ans: "D", explain: "In cases like destructive testing, a full census is impossible." },
+      { id: 54, topic: "Sampling", q: "The main structural disadvantage of sampling is the introduction of:", options: { A: "Sampling Error", B: "Ineffective high costs", C: "Immense time delays", D: "None" }, ans: "A", explain: "Because we inspect only a subset, we accept standard errors in our predictions." },
+      { id: 55, topic: "Sampling", q: "Systematic Sampling relies heavily on having:", options: { A: "An organized list (Sampling Frame) of the population", B: "Full face-to-face map coordinates", C: "Only small focus groups", D: "None" }, ans: "A", explain: "An ordered sampling frame is required to apply the fixed interval interval step." },
+      { id: 56, topic: "Sampling", q: "Stratified Sampling primarily aims to improve:", options: { A: "Representation of minority subgroups", B: "Interviewer bias", C: "Processing error", D: "None" }, ans: "A", explain: "Dividing the population into strata ensures smaller subgroups are not missed." },
+      { id: 57, topic: "Sampling", q: "Cluster Sampling reduces:", options: { A: "Geographical travel cost", B: "Fieldwork logistics", C: "Operational complexity", D: "All" }, ans: "D", explain: "Grouping observations into clusters simplifies field logistics." },
+      { id: 58, topic: "Sampling", q: "Purposive Sampling depends primarily on:", options: { A: "Expert judgment of the researcher", B: "Random numbers", C: "Lottery lists", D: "None" }, ans: "A", explain: "The researcher's judgment determines which units are selected." },
+      { id: 59, topic: "Sampling", q: "Convenience Sampling is popular because it is:", options: { A: "Fast", B: "Cheap", C: "Easy to execute", D: "All" }, ans: "D", explain: "Its low barrier to entry makes it popular for pilot trials and student projects." },
+      { id: 60, topic: "Sampling", q: "Snowball Sampling expands its reach through:", options: { A: "Social Networks and referrals", B: "Random number tables", C: "Government records", D: "None" }, ans: "A", explain: "Referrals connect the researcher to hard-to-reach peer networks." },
+
+      // SET 3: ERRORS (61-90)
+      { id: 61, topic: "Errors", q: "The difference between a sample estimate and the true population parameter is:", options: { A: "Sampling Error", B: "Response Error", C: "Coverage Error", D: "None" }, ans: "A", explain: "Sampling error represents the discrepancy between sample estimates and population parameters." },
+      { id: 62, topic: "Errors", q: "Sampling Error can occur in:", options: { A: "Census operations only", B: "Sample surveys only", C: "Both census and sample surveys", D: "None" }, ans: "B", explain: "Sampling error is unique to sample surveys and is absent in a complete census." },
+      { id: 63, topic: "Errors", q: "Sampling Error is theoretically considered:", options: { A: "Inherent and unavoidable in sampling", B: "Easily avoidable by careful drafting", C: "Completely nonexistent", D: "None" }, ans: "A", explain: "Since a sample is a subset of a population, sampling error is inherently present." },
+      { id: 64, topic: "Errors", q: "Increasing the sample size $n$ generally:", options: { A: "Increases Sampling Error", B: "Reduces Sampling Error", C: "Has no effect on error", D: "None" }, ans: "B", explain: "Sampling error decreases as the sample size $n$ increases, following the law of inertia of large numbers." },
+      { id: 65, topic: "Errors", q: "A biased or defective sample design results in:", options: { A: "Sampling Error/Bias", B: "Processing Error", C: "Coding Error", D: "None" }, ans: "A", explain: "A flawed selection method introduces systematic bias that skews estimates." },
+      { id: 66, topic: "Errors", q: "Choosing an inappropriate statistical estimator causes:", options: { A: "Sampling Error", B: "Coverage Error", C: "Response Error", D: "None" }, ans: "A", explain: "The choice of formula impacts the precision and bias of the sample estimate." },
+      { id: 67, topic: "Errors", q: "Non-sampling errors can occur in:", options: { A: "Census operations only", B: "Sample surveys only", C: "Both Census and Sample surveys", D: "None" }, ans: "C", explain: "Non-sampling errors are human errors that can happen in any data collection process." },
+      { id: 68, topic: "Errors", q: "When a respondent reports their age as 25 instead of 35, it is a:", options: { A: "Response Error", B: "Sampling Error", C: "Coverage Error", D: "None" }, ans: "A", explain: "Response errors occur when inaccurate information is reported by the respondent." },
+      { id: 69, topic: "Errors", q: "When a selected respondent refuses to answer a questionnaire, it is a:", options: { A: "Response Error", B: "Non-response Error", C: "Coverage Error", D: "None" }, ans: "B", explain: "Non-response occurs when sampled units do not participate or provide data." },
+      { id: 70, topic: "Errors", q: "A data entry clerk making a typo during keying is a:", options: { A: "Processing Error", B: "Sampling Error", C: "Census Error", D: "None" }, ans: "A", explain: "Processing errors occur during data entry, coding, or cleaning." },
+      { id: 71, topic: "Errors", q: "An interviewer recording different answers than what the respondent said is an:", options: { A: "Interviewer Error", B: "Sampling Error", C: "Coverage Error", D: "None" }, ans: "A", explain: "Interviewer errors arise from mistakes or bias on the part of the data collector." },
+      { id: 72, topic: "Errors", q: "Failing to list an entire street in a municipal sampling frame is a:", options: { A: "Coverage Error", B: "Response Error", C: "Processing Error", D: "None" }, ans: "A", explain: "Coverage error occurs when there is a mismatch between the target population and the sampling frame." },
+      { id: 73, topic: "Errors", q: "Non-sampling errors are generally considered:", options: { A: "Serious and potentially biasing", B: "Trivial and easy to ignore", C: "Extremely rare", D: "None" }, ans: "A", explain: "Unlike sampling errors, non-sampling errors do not automatically decrease with a larger sample size." },
+      { id: 74, topic: "Errors", q: "Which error does NOT decrease as the sample size increases?", options: { A: "Sampling Error", B: "Non-sampling Error", C: "Standard Error", D: "None" }, ans: "B", explain: "Non-sampling errors can increase with larger samples due to administrative complexity." },
+      { id: 75, topic: "Errors", q: "Mistakes in categorization during data entry are classified as:", options: { A: "Processing Error", B: "Sampling Error", C: "Response Error", D: "None" }, ans: "A", explain: "Coding and entry errors are part of the post-collection processing phase." },
+      { id: 76, topic: "Errors", q: "Non-response in a survey primarily leads to:", options: { A: "Non-response Bias", B: "Sampling Error", C: "Data entry mistakes", D: "None" }, ans: "A", explain: "If non-respondents differ systematically from respondents, bias is introduced." },
+      { id: 77, topic: "Errors", q: "Omissions in the initial sampling frame lead to:", options: { A: "Coverage Error", B: "Refusal Error", C: "Coding Error", D: "None" }, ans: "A", explain: "Excluding valid units from the sampling frame results in coverage error." },
+      { id: 78, topic: "Errors", q: "Sampling Bias refers to:", options: { A: "Systematic error due to non-random selection", B: "Random standard error", C: "Data entry mistakes", D: "None" }, ans: "A", explain: "Bias causes estimates to systematically deviate from true values." },
+      { id: 79, topic: "Errors", q: "Which error is most likely to occur in a complete Census?", options: { A: "Sampling Error", B: "Non-sampling Error", C: "None of these", D: "Random Sampling Error" }, ans: "B", explain: "Non-sampling errors occur in both censuses and sample surveys." },
+      { id: 80, topic: "Errors", q: "The most effective way to reduce non-sampling errors is:", options: { A: "Training interviewers and testing forms", B: "Increasing sample size", C: "Using convenient samples", D: "None" }, ans: "A", explain: "Standardized training and pilot testing help minimize human error." },
+      { id: 81, topic: "Errors", q: "Which type of statistical error can be estimated mathematically?", options: { A: "Sampling Error", B: "Non-sampling Error", C: "Both", D: "None" }, ans: "A", explain: "Probability theory allows for the calculation of standard errors in probability sampling." },
+      { id: 82, topic: "Errors", q: "When the sample size equals the population size, the sampling error is:", options: { A: "Maximum", B: "Zero", C: "One", D: "Infinite" }, ans: "B", explain: "If the sample includes the entire population, the sample estimate matches the parameter." },
+      { id: 83, topic: "Errors", q: "Which error can increase as the sample size increases?", options: { A: "Sampling Error", B: "Non-sampling Error", C: "Both", D: "None" }, ans: "B", explain: "Larger samples require more staff and data entry, increasing the risk of human error." },
+      { id: 84, topic: "Errors", q: "Non-sampling errors are primarily caused by:", options: { A: "Human error and administrative issues", B: "Random chance", C: "Sample size constraints", D: "None" }, ans: "A", explain: "These errors arise from human mistakes in design, collection, and processing." },
+      { id: 85, topic: "Errors", q: "Systematic, non-random errors are generally:", options: { A: "Cumulative", B: "Compensating", C: "Random", D: "None" }, ans: "A", explain: "Systematic bias accumulates in one direction rather than canceling out." },
+      { id: 86, topic: "Errors", q: "Unbiased, random errors are generally:", options: { A: "Cumulative", B: "Compensating", C: "Systematic", D: "None" }, ans: "B", explain: "Random errors tend to cancel each other out over large sample sizes." },
+      { id: 87, topic: "Errors", q: "The standard error is a measure of:", options: { A: "Non-sampling Error", B: "Sampling Error", C: "Processing Error", D: "Response Error" }, ans: "B", explain: "Standard error quantifies the variability of sample estimates around the population parameter." },
+      { id: 88, topic: "Errors", q: "Pilot testing of questionnaires helps reduce:", options: { A: "Sampling Error", B: "Non-sampling Error", C: "Both", D: "None" }, ans: "B", explain: "Pre-testing identifies and corrects confusing questions before full deployment." },
+      { id: 89, topic: "Errors", q: "Which of the following is a key source of non-sampling error?", options: { A: "Vague questions", B: "Inexperienced staff", C: "Data entry mistakes", D: "All of the above" }, ans: "D", explain: "All of these choices represent common sources of human error in research." },
+      { id: 90, topic: "Errors", q: "An error caused by illegible handwriting on paper surveys is a:", options: { A: "Processing Error", B: "Transcription Error", C: "Non-response Error", D: "Sampling Error" }, ans: "B", explain: "Transcription errors occur when transferring handwritten data to digital systems." },
+
+      // SET 4: ORGANIZATION OF DATA (91-120)
+      { id: 91, topic: "Organization", q: "Organization of Data involves:", options: { A: "Arranging raw data systematically", B: "Deleting outlier values", C: "Sampling subsets", D: "None" }, ans: "A", explain: "Organization processes raw data into structured formats to prepare it for analysis." },
+      { id: 92, topic: "Organization", q: "The first step after data collection is:", options: { A: "Tabulation", B: "Classification", C: "Editing and cleaning", D: "Analysis" }, ans: "C", explain: "Editing ensures the collected raw data is consistent, complete, and accurate." },
+      { id: 93, topic: "Organization", q: "Editing data primarily means:", options: { A: "Checking for errors and omissions", B: "Drawing charts", C: "Encoding values", D: "None" }, ans: "A", explain: "Data editing detects and corrects errors, omissions, and inconsistencies." },
+      { id: 94, topic: "Organization", q: "Classification of data means:", options: { A: "Grouping data into classes based on characteristics", B: "Deleting old files", C: "Sampling units", D: "None" }, ans: "A", explain: "Classification groups data with similar attributes into homogenous classes." },
+      { id: 95, topic: "Organization", q: "Tabulation refers to:", options: { A: "Presenting data in rows and columns", B: "Drawing circle graphs", C: "Encoding survey answers", D: "None" }, ans: "A", explain: "Tabulation presents classified data in structured tables." },
+      { id: 96, topic: "Organization", q: "Classifying data based on geographical location is:", options: { A: "Geographical/Spatial", B: "Temporal/Chronological", C: "Quantitative", D: "Qualitative" }, ans: "A", explain: "Geographical classification organizes data according to location." },
+      { id: 97, topic: "Organization", q: "Classifying data according to time periods is:", options: { A: "Chronological/Temporal", B: "Geographical", C: "Qualitative", D: "None" }, ans: "A", explain: "Chronological classification organizes data in time sequence." },
+      { id: 98, topic: "Organization", q: "Classifying individuals by literacy level is:", options: { A: "Qualitative", B: "Quantitative", C: "Temporal", D: "None" }, ans: "A", explain: "Literacy is a descriptive attribute, making it a qualitative classification." },
+      { id: 99, topic: "Organization", q: "Classifying households by monthly income is:", options: { A: "Quantitative", B: "Qualitative", C: "Spatial", D: "None" }, ans: "A", explain: "Income is a measurable numerical value, making it a quantitative classification." },
+      { id: 100, topic: "Organization", q: "The primary objective of organizing data is to:", options: { A: "Simplify complex data for analysis", B: "Increase complexity", C: "Discard responses", D: "None" }, ans: "A", explain: "Organization condenses raw data into a structured format for comparison." },
+      { id: 101, topic: "Organization", q: "An orderly arrangement of data in rows and columns is:", options: { A: "Classification", B: "Tabulation", C: "Diagrammatic representation", D: "Editing" }, ans: "B", explain: "Tabulation presents data in structured rows and columns." },
+      { id: 102, topic: "Organization", q: "Data arranged according to attributes (e.g. religion, gender) is:", options: { A: "Quantitative", B: "Qualitative", C: "Temporal", D: "Spatial" }, ans: "B", explain: "Qualitative data is structured around non-numeric descriptive attributes." },
+      { id: 103, topic: "Organization", q: "Unprocessed data collected from the field is known as:", options: { A: "Organized Data", B: "Raw Data", C: "Tabulated Data", D: "Classified Data" }, ans: "B", explain: "Raw data is unprocessed data that has not yet been organized." },
+      { id: 104, topic: "Organization", q: "Data represented in a time sequence is:", options: { A: "Spatial", B: "Chronological", C: "Attribute", D: "Quantitative" }, ans: "B", explain: "Chronological classification organizes data in time order." },
+      { id: 105, topic: "Organization", q: "Spatial classification of data is based on:", options: { A: "Time", B: "Location", C: "Attributes", D: "Measurements" }, ans: "B", explain: "Spatial classification organizes data based on geography or location." },
+      { id: 106, topic: "Organization", q: "The process of arranging data into groups based on shared traits is:", options: { A: "Tabulation", B: "Classification", C: "Interpretation", D: "Presentation" }, ans: "B", explain: "Classification groups data into classes based on characteristics." },
+      { id: 107, topic: "Organization", q: "Which of the following is a qualitative classification?", options: { A: "Income", B: "Nationality", C: "Age", D: "Weight" }, ans: "B", explain: "Nationality is a descriptive attribute, making it qualitative." },
+      { id: 108, topic: "Organization", q: "Which of the following is a quantitative classification?", options: { A: "Religion", B: "Height", C: "Gender", D: "Marital Status" }, ans: "B", explain: "Height is a measurable numerical value, making it quantitative." },
+      { id: 109, topic: "Organization", q: "Organization of data helps to facilitate:", options: { A: "Simplification", B: "Comparison", C: "Scientific analysis", D: "All of these" }, ans: "D", explain: "Organization processes raw data to make it ready for analysis and comparison." },
+      { id: 110, topic: "Organization", q: "Which of the following is the first stage of statistical inquiry?", options: { A: "Organization", B: "Collection", C: "Presentation", D: "Analysis" }, ans: "B", explain: "Data collection must occur before organization, presentation, and analysis." },
+      { id: 111, topic: "Organization", q: "Classifying population into male and female is an example of:", options: { A: "Simple Classification", B: "Manifold Classification", C: "Quantitative Classification", D: "Chronological Classification" }, ans: "A", explain: "Simple classification splits data into two classes based on one attribute." },
+      { id: 112, topic: "Organization", q: "Classifying population by gender, literacy, and employment status is:", options: { A: "Simple Classification", B: "Manifold Classification", C: "Spatial Classification", D: "Chronological Classification" }, ans: "B", explain: "Manifold classification groups data based on multiple attributes simultaneously." },
+      { id: 113, topic: "Organization", q: "Data edited for consistency and completeness is:", options: { A: "Raw Data", B: "Cleaned Data", C: "Primary Data", D: "None" }, ans: "B", explain: "Editing cleans raw data to ensure completeness and accuracy." },
+      { id: 114, topic: "Organization", q: "Grouping data based on occupation is:", options: { A: "Qualitative", B: "Quantitative", C: "Chronological", D: "Geographical" }, ans: "A", explain: "Occupation is a descriptive attribute, making it qualitative." },
+      { id: 115, topic: "Organization", q: "Chronological classification structures data by:", options: { A: "Heights", B: "Ages", C: "Years or Months", D: "Areas" }, ans: "C", explain: "Chronological classification organizes data in time sequence." },
+      { id: 116, topic: "Organization", q: "Data classified according to numerical size is:", options: { A: "Qualitative", B: "Quantitative", C: "Spatial", D: "Temporal" }, ans: "B", explain: "Quantitative classification organizes data based on numerical variables." },
+      { id: 117, topic: "Organization", q: "Statistics is primarily concerned with:", options: { A: "Individual facts", B: "Aggregate of facts", C: "Qualitative descriptions", D: "None" }, ans: "B", explain: "Statistics analyzes aggregated datasets to identify patterns." },
+      { id: 118, topic: "Organization", q: "Which of the following is a secondary source of data?", options: { A: "Personal Interview", B: "Published Journals", C: "Direct Questionnaire", D: "Mailed Schedule" }, ans: "B", explain: "Published journals are secondary sources since the data has already been collected." },
+      { id: 119, topic: "Organization", q: "The internal consistency of data can be checked using:", options: { A: "Logical check rules", B: "Random guessing", C: "Ignoring blanks", D: "None" }, ans: "A", explain: "Logical consistency checks identify errors across related fields." },
+      { id: 120, topic: "Organization", q: "Organizing raw data helps to:", options: { A: "Remove noise", B: "Highlight relationships", C: "Prepare for tabulation", D: "All of the above" }, ans: "D", explain: "Organization processes raw data to prepare it for subsequent steps." },
+
+      // SET 5: CLASSIFICATION & TABULATION (121-150)
+      { id: 121, topic: "Classification", q: "Discrete and Continuous variables are components of:", options: { A: "Quantitative Classification", B: "Qualitative Classification", C: "Time Classification", D: "Geographical Classification" }, ans: "A", explain: "These variables represent different forms of numerical data." },
+      { id: 122, topic: "Classification", q: "When the upper limit of one class equals the lower limit of the next, it is the:", options: { A: "Exclusive Method", B: "Inclusive Method", C: "Ratio Method", D: "None" }, ans: "A", explain: "In the exclusive method, the upper limit is excluded from the current class." },
+      { id: 123, topic: "Classification", q: "A Frequency Distribution refers to:", options: { A: "Arranging data into classes with frequencies", B: "Census data collection", C: "Sampling methods", D: "None" }, ans: "A", explain: "It groups data into intervals and shows the count for each interval." },
+      { id: 124, topic: "Classification", q: "Less-than cumulative frequency is calculated by:", options: { A: "Adding frequencies from top downward", B: "Adding frequencies from bottom upward", C: "Randomly", D: "None" }, ans: "A", explain: "It aggregates frequencies from the lowest class to the highest." },
+      { id: 125, topic: "Classification", q: "A table that presents data on two or more characteristics is a:", options: { A: "Complex Table", B: "Simple Table", C: "Percentage Table", D: "None" }, ans: "A", explain: "Complex tables display multiple variables simultaneously." },
+      { id: 126, topic: "Classification", q: "In a statistical table, Stubs refer to:", options: { A: "Row Headings", B: "Column Headings", C: "Footnotes", D: "Sources" }, ans: "A", explain: "Stubs are the row descriptions on the left side of the table." },
+      { id: 127, topic: "Classification", q: "The Headnote of a table displays:", options: { A: "Units of measurement", B: "Data sources", C: "Row headings", D: "None" }, ans: "A", explain: "Headnotes clarify units or scope just below the main title." },
+      { id: 128, topic: "Classification", q: "The Mid-value (Class Mark) formula is:", options: { A: "(U + L) / 2", B: "(U - L) / 2", C: "U * L", D: "None" }, ans: "A", explain: "It calculates the middle point of a class interval." },
+      { id: 129, topic: "Classification", q: "The primary objectives of tabulation are to:", options: { A: "Simplify data", B: "Facilitate comparison", C: "Save space", D: "All" }, ans: "D", explain: "Tabulation presents data clearly to facilitate analysis." },
+      { id: 130, topic: "Classification", q: "A well-designed statistical table should include:", options: { A: "Source note", B: "Proper heading", C: "Stubs and captions", D: "All" }, ans: "D", explain: "All of these elements are standard components of a complete table." },
+      { id: 131, topic: "Classification", q: "In the inclusive method of class intervals:", options: { A: "Both limits are included in the interval", B: "The upper limit is excluded", C: "The lower limit is excluded", D: "None" }, ans: "A", explain: "Both the lower and upper limits are included in the class interval." },
+      { id: 132, topic: "Classification", q: "The difference between the upper and lower limits of a class is the:", options: { A: "Class Boundary", B: "Class Width/Size", C: "Class Mark", D: "Frequency" }, ans: "B", explain: "Class width is calculated as the upper limit minus the lower limit." },
+      { id: 133, topic: "Classification", q: "For a continuous variable, the most appropriate method is the:", options: { A: "Inclusive Method", B: "Exclusive Method", C: "Discrete Method", D: "None" }, ans: "B", explain: "The exclusive method maintains continuity across class boundaries." },
+      { id: 134, topic: "Classification", q: "Stubs are positioned in the:", options: { A: "Left-most column", B: "Right-most column", C: "Top row", D: "Footnote" }, ans: "A", explain: "Stubs are the row descriptions located in the left column." },
+      { id: 135, topic: "Classification", q: "In a statistical table, Captions refer to:", options: { A: "Row headings", B: "Column headings", C: "Table titles", D: "Source notes" }, ans: "B", explain: "Captions are the headings for the columns." },
+      { id: 136, topic: "Classification", q: "A table that presents data on only one characteristic is a:", options: { A: "Complex Table", B: "Simple Table", C: "Double Table", D: "Treble Table" }, ans: "B", explain: "Simple tables present data classified by a single attribute." },
+      { id: 137, topic: "Classification", q: "Source notes in a table are placed at the:", options: { A: "Below the Title", B: "In the Stub", C: "In the Caption", D: "Very bottom" }, ans: "D", explain: "Source notes cite data sources and are placed below footnotes." },
+      { id: 138, topic: "Classification", q: "The mid-point of the class interval 10–20 is:", options: { A: "15", B: "5", C: "30", D: "20" }, ans: "A", explain: "The midpoint is calculated as: (10 + 20) / 2 = 15." },
+      { id: 139, topic: "Classification", q: "Cumulative frequency distributions are used to calculate the:", options: { A: "Mean", B: "Median", C: "Mode", D: "Range" }, ans: "B", explain: "Cumulative frequency curves (ogives) identify the median point." },
+      { id: 140, topic: "Classification", q: "A variable that can take any fractional value within its range is a:", options: { A: "Discrete variable", B: "Continuous variable", C: "Qualitative variable", D: "Constant" }, ans: "B", explain: "Continuous variables can take any real value within an interval." },
+      { id: 141, topic: "Classification", q: "A variable that can take only specific, isolated values is a:", options: { A: "Continuous variable", B: "Discrete variable", C: "Attribute", D: "Constant" }, ans: "B", explain: "Discrete variables take specific distinct values, usually integers." },
+      { id: 142, topic: "Classification", q: "The number of times a value occurs in a dataset is its:", options: { A: "Class interval", B: "Frequency", C: "Cumulative frequency", D: "Range" }, ans: "B", explain: "Frequency represents the count of occurrences of a data value." },
+      { id: 143, topic: "Classification", q: "Which of the following is a standard part of a table?", options: { A: "Title", B: "Stub", C: "Caption", D: "All of these" }, ans: "D", explain: "These components are all required parts of a formal table." },
+      { id: 144, topic: "Classification", q: "The Box-head of a table contains the:", options: { A: "Row headings only", B: "Column headings only", C: "Both row and column headings", D: "Source notes" }, ans: "B", explain: "The box-head contains the column headings and captions." },
+      { id: 145, topic: "Classification", q: "Class frequencies are plotted on the:", options: { A: "X-axis", B: "Y-axis", C: "Both axes", D: "Origin" }, ans: "B", explain: "Frequencies are plotted on the vertical Y-axis." },
+      { id: 146, topic: "Classification", q: "A cumulative frequency curve is also called an:", options: { A: "Ogive", B: "Histogram", C: "Frequency Polygon", D: "Bar Chart" }, ans: "A", explain: "An ogive is the graph of a cumulative frequency distribution." },
+      { id: 147, topic: "Classification", q: "A table that displays data cross-classified by two variables is:", options: { A: "Univariate Table", B: "Bivariate Table", C: "Simple Table", D: "None" }, ans: "B", explain: "Bivariate tables show the joint distribution of two variables." },
+      { id: 148, topic: "Classification", q: "Class width is calculated as:", options: { A: "Upper Limit - Lower Limit", B: "Upper Limit + Lower Limit", C: "Mid Value * 2", D: "None" }, ans: "A", explain: "Width is the difference between the upper and lower limits of a class." },
+      { id: 149, topic: "Classification", q: "The column headings in a table are called:", options: { A: "Captions", B: "Stubs", C: "Titles", D: "None" }, ans: "A", explain: "Captions are the column headings at the top of the table." },
+      { id: 150, topic: "Classification", q: "The brief descriptive text at the top of a table is the:", options: { A: "Stub", B: "Caption", C: "Title", D: "Footnote" }, ans: "C", explain: "The title summarizes the contents of the table." }
+    ];
+
+    // Local state tracking
+    let answers = {}; // Maps question ID to chosen option ('A', 'B', 'C', 'D')
+    let flags = new Set();
+    let bookmarks = new Set();
+    let currentIndex = 0;
+    let timeRemaining = 150 * 60; // 150 minutes
+    let isPaused = false;
+    let timerInterval = null;
+    let testSubmitted = false;
+    let studyMode = false;
+    let activeTopicFilter = "all";
+    let searchQuery = "";
+    let reviewFilter = "all";
+
+    // Initialize application on load
+    window.onload = function() {
+      loadState();
+      initTimer();
+      renderBubbleSheet();
+      renderQuestionCard();
+      updateProgressBar();
+    }
+
+    // Timer logic
+    function initTimer() {
+      timerInterval = setInterval(() => {
+        if (!isPaused && timeRemaining > 0) {
+          timeRemaining--;
+          updateTimerUI();
+          saveState();
+        } else if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          submitDiagnostics();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      const mins = Math.floor(timeRemaining / 60);
+      const secs = timeRemaining % 60;
+      document.getElementById("txtTimer").innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      const pauseIcon = document.getElementById("pauseIcon");
+      if (isPaused) {
+        pauseIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+        document.getElementById("questionCard").style.opacity = "0.3";
+        document.getElementById("questionCard").style.pointerEvents = "none";
+      } else {
+        pauseIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"></path>`;
+        document.getElementById("questionCard").style.opacity = "1";
+        document.getElementById("questionCard").style.pointerEvents = "auto";
+      }
+    }
+
+    // Filter by Topic
+    function filterByTopic(topic) {
+      activeTopicFilter = topic;
+      // Style buttons
+      const topics = ["all", "Census", "Sampling", "Errors", "Organization", "Classification"];
+      topics.forEach(t => {
+        const btn = document.getElementById(`filterBtn_${t}`);
+        if (t === topic) {
+          btn.className = "text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-200 bg-slate-900 text-white transition shadow-sm";
+        } else {
+          btn.className = "text-[11px] font-bold text-left px-3 py-2 rounded-xl border border-slate-100 hover:bg-slate-50 bg-white text-slate-600 transition";
+        }
+      });
+      renderBubbleSheet();
+    }
+
+    // Search input
+    function handleSearch() {
+      searchQuery = document.getElementById("searchBar").value.toLowerCase();
+      renderBubbleSheet();
+    }
+
+    // Render Bubble Sheet Navigator
+    function renderBubbleSheet() {
+      const container = document.getElementById("bubbleGrid");
+      container.innerHTML = "";
+      
+      let count = 0;
+      QUESTIONS_DATA.forEach((q, index) => {
+        // Apply filters
+        const matchesTopic = (activeTopicFilter === "all" || q.topic === activeTopicFilter);
+        const matchesSearch = q.q.toLowerCase().includes(searchQuery);
+        
+        if (matchesTopic && matchesSearch) {
+          count++;
+          const bubble = document.createElement("button");
+          bubble.innerText = q.id;
+          
+          // Determine styling states
+          const isCurrent = index === currentIndex;
+          const isAnswered = answers[q.id] !== undefined;
+          const isFlagged = flags.has(q.id);
+          
+          let styleClasses = "w-10 h-10 rounded-xl text-xs font-bold flex items-center justify-center transition border bubble-transition ";
+          
+          if (isCurrent) {
+            styleClasses += "border-slate-900 ring-2 ring-slate-900/10 bg-slate-900 text-white ";
+          } else if (isFlagged && isAnswered) {
+            styleClasses += "border-amber-400 bg-gradient-to-tr from-amber-400 to-amber-500 text-white shadow-sm shadow-amber-100";
+          } else if (isFlagged) {
+            styleClasses += "border-amber-400 bg-amber-50 text-amber-600";
+          } else if (isAnswered) {
+            styleClasses += "border-indigo-600 bg-indigo-600 text-white shadow-sm shadow-indigo-100";
+          } else {
+            styleClasses += "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50";
+          }
+          
+          bubble.className = styleClasses;
+          bubble.onclick = () => jumpToQuestion(index);
+          container.appendChild(bubble);
+        }
+      });
+      document.getElementById("gridCount").innerText = `Showing ${count}`;
+    }
+
+    // Render Question Screen
+    function renderQuestionCard() {
+      const qObj = QUESTIONS_DATA[currentIndex];
+      
+      // Badges and counters
+      document.getElementById("badgeCategory").innerText = qObj.topic.toUpperCase();
+      document.getElementById("badgeQuestionNum").innerText = `Q ${qObj.id} of 150`;
+      document.getElementById("questionText").innerText = qObj.q;
+      
+      // Flag state
+      const flagIcon = document.getElementById("flagIcon");
+      if (flags.has(qObj.id)) {
+        flagIcon.setAttribute("fill", "#f59e0b");
+        flagIcon.setAttribute("stroke", "#d97706");
+        document.getElementById("btnFlag").className = "p-2 border border-amber-200 bg-amber-50 rounded-xl text-amber-500 transition";
+      } else {
+        flagIcon.setAttribute("fill", "none");
+        flagIcon.setAttribute("stroke", "currentColor");
+        document.getElementById("btnFlag").className = "p-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-amber-600 transition";
+      }
+
+      // Bookmark state
+      const bookmarkIcon = document.getElementById("bookmarkIcon");
+      if (bookmarks.has(qObj.id)) {
+        bookmarkIcon.setAttribute("fill", "#f59e0b");
+        bookmarkIcon.setAttribute("stroke", "#d97706");
+        document.getElementById("btnBookmark").className = "p-2 border border-amber-200 bg-amber-50 rounded-xl text-amber-500 transition";
+      } else {
+        bookmarkIcon.setAttribute("fill", "none");
+        bookmarkIcon.setAttribute("stroke", "currentColor");
+        document.getElementById("btnBookmark").className = "p-2 border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-400 hover:text-amber-500 transition";
+      }
+
+      // Render Option Buttons
+      const optContainer = document.getElementById("optionsContainer");
+      optContainer.innerHTML = "";
+      
+      const currentAnswer = answers[qObj.id];
+      
+      Object.keys(qObj.options).forEach(key => {
+        const optionText = qObj.options[key];
+        const btn = document.createElement("button");
+        
+        const isSelected = currentAnswer === key;
+        const showResults = studyMode || testSubmitted;
+        const isCorrect = key === qObj.ans;
+        
+        let btnClasses = "w-full text-left p-4 rounded-2xl border text-sm font-medium transition duration-150 flex items-center justify-between ";
+        let badgeSpan = `<span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 text-xs font-bold flex items-center justify-center shrink-0 border border-slate-200">${key}</span>`;
+        
+        if (showResults) {
+          // Highlight correct and incorrect choices
+          if (isCorrect) {
+            btnClasses += "border-emerald-500 bg-emerald-50/50 text-emerald-900";
+            badgeSpan = `<span class="w-7 h-7 rounded-lg bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0 border border-emerald-700">✓</span>`;
+          } else if (isSelected && !isCorrect) {
+            btnClasses += "border-rose-500 bg-rose-50/50 text-rose-900";
+            badgeSpan = `<span class="w-7 h-7 rounded-lg bg-rose-600 text-white text-xs font-bold flex items-center justify-center shrink-0 border border-rose-700">✗</span>`;
+          } else {
+            btnClasses += "border-slate-200 bg-white text-slate-500 opacity-60";
+          }
+        } else {
+          // Standard selection highlights
+          if (isSelected) {
+            btnClasses += "border-indigo-600 bg-indigo-50/30 text-indigo-900 ring-1 ring-indigo-600";
+            badgeSpan = `<span class="w-7 h-7 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0 border border-indigo-700">${key}</span>`;
+          } else {
+            btnClasses += "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-slate-700";
+          }
+        }
+        
+        btn.className = btnClasses;
+        btn.onclick = () => selectOption(key);
+        btn.disabled = testSubmitted; // Disable choosing if test submitted
+        
+        btn.innerHTML = `
+          <div class="flex items-center gap-3">
+            ${badgeSpan}
+            <span class="font-semibold">${optionText}</span>
+          </div>
+        `;
+        
+        optContainer.appendChild(btn);
+      });
+
+      // Explanation module logic
+      const expBox = document.getElementById("explanationBox");
+      if (studyMode && currentAnswer !== undefined) {
+        expBox.classList.remove("hidden");
+        document.getElementById("explanationText").innerText = qObj.explain;
+      } else {
+        expBox.classList.add("hidden");
+      }
+
+      // Disabled previous/next limits
+      document.getElementById("btnPrev").disabled = currentIndex === 0;
+      document.getElementById("btnNext").innerText = currentIndex === 149 ? "Review Test" : "Next";
+    }
+
+    // Toggle Flag
+    function toggleFlag() {
+      const qObj = QUESTIONS_DATA[currentIndex];
+      if (flags.has(qObj.id)) {
+        flags.delete(qObj.id);
+      } else {
+        flags.add(qObj.id);
+      }
+      renderQuestionCard();
+      renderBubbleSheet();
+      saveState();
+    }
+
+    // Toggle Bookmark
+    function toggleBookmark() {
+      const qObj = QUESTIONS_DATA[currentIndex];
+      if (bookmarks.has(qObj.id)) {
+        bookmarks.delete(qObj.id);
+      } else {
+        bookmarks.add(qObj.id);
+      }
+      renderQuestionCard();
+      saveState();
+    }
+
+    // Jump to Question
+    function jumpToQuestion(index) {
+      currentIndex = index;
+      renderQuestionCard();
+      renderBubbleSheet();
+    }
+
+    // Option choice
+    function selectOption(key) {
+      if (testSubmitted) return;
+      const qObj = QUESTIONS_DATA[currentIndex];
+      answers[qObj.id] = key;
+      
+      renderQuestionCard();
+      renderBubbleSheet();
+      updateProgressBar();
+      saveState();
+    }
+
+    // Clear Option choice
+    function clearCurrentAnswer() {
+      if (testSubmitted) return;
+      const qObj = QUESTIONS_DATA[currentIndex];
+      delete answers[qObj.id];
+      renderQuestionCard();
+      renderBubbleSheet();
+      updateProgressBar();
+      saveState();
+    }
+
+    // Navigation
+    function navigateQuestion(direction) {
+      if (direction === 1 && currentIndex === 149) {
+        confirmSubmit();
+        return;
+      }
+      currentIndex += direction;
+      if (currentIndex < 0) currentIndex = 0;
+      if (currentIndex > 149) currentIndex = 149;
+      renderQuestionCard();
+      renderBubbleSheet();
+    }
+
+    // Toggle study mode vs test mode
+    function toggleStudyMode(isStudy) {
+      studyMode = isStudy;
+      const btnTest = document.getElementById("btnTestMode");
+      const btnStudy = document.getElementById("btnStudyMode");
+      const banner = document.getElementById("studyModeBanner");
+      
+      if (studyMode) {
+        btnStudy.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bubble-transition shadow-sm bg-white text-slate-800";
+        btnTest.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bubble-transition text-slate-500 hover:text-slate-700";
+        banner.classList.remove("hidden");
+      } else {
+        btnTest.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bubble-transition shadow-sm bg-white text-slate-800";
+        btnStudy.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bubble-transition text-slate-500 hover:text-slate-700";
+        banner.classList.add("hidden");
+      }
+      renderQuestionCard();
+    }
+
+    // Calculate answered progress
+    function updateProgressBar() {
+      const total = 150;
+      const answeredCount = Object.keys(answers).length;
+      const percentage = (answeredCount / total) * 100;
+      
+      document.getElementById("progressText").innerText = `${answeredCount}/${total}`;
+      document.getElementById("progressBar").style.width = `${percentage}%`;
+    }
+
+    // Submit dialog modal
+    function confirmSubmit() {
+      const modal = document.getElementById("submitModal");
+      modal.classList.remove("hidden");
+      
+      const answeredCount = Object.keys(answers).length;
+      document.getElementById("modalAnsweredCount").innerText = answeredCount;
+      document.getElementById("modalFlaggedCount").innerText = flags.size;
+    }
+
+    function closeSubmitModal() {
+      document.getElementById("submitModal").classList.add("hidden");
+    }
+
+    // Grade and Submit
+    function submitDiagnostics() {
+      closeSubmitModal();
+      testSubmitted = true;
+      clearInterval(timerInterval);
+      
+      // Calculate results
+      let score = 0;
+      let incorrect = 0;
+      let unanswered = 0;
+      
+      // Group calculations by topics
+      const topicStats = {
+        Census: { correct: 0, total: 30 },
+        Sampling: { correct: 0, total: 30 },
+        Errors: { correct: 0, total: 30 },
+        Organization: { correct: 0, total: 30 },
+        Classification: { correct: 0, total: 30 }
+      };
+
+      QUESTIONS_DATA.forEach(q => {
+        const choice = answers[q.id];
+        if (choice === undefined) {
+          unanswered++;
+        } else if (choice === q.ans) {
+          score++;
+          topicStats[q.topic].correct++;
+        } else {
+          incorrect++;
+        }
+      });
+
+      // Show Results screen hide test dashboard
+      document.getElementById("testDashboard").classList.add("hidden");
+      document.getElementById("testDashboard").classList.remove("lg:flex-1");
+      document.getElementById("testDashboard").classList.remove("flex-grow");
+      document.getElementById("timerBox").classList.add("hidden");
+      document.getElementById("modeContainer").classList.add("hidden");
+      
+      const resultsDashboard = document.getElementById("resultDashboard");
+      resultsDashboard.classList.remove("hidden");
+      resultsDashboard.scrollTop = 0;
+
+      // Render Banner stats
+      document.getElementById("resultScore").innerText = score;
+      const accuracy = ((score / 150) * 100).toFixed(1);
+      document.getElementById("resultAccuracy").innerText = `${accuracy}%`;
+
+      // Assign Rank/Grade standard
+      let rankText = "Revise Topics";
+      let rankClass = "bg-rose-500/20 border-rose-400/30 text-rose-300";
+      
+      if (score >= 135) {
+        rankText = "🏆 UPSC/NET Ready (Expert)";
+        rankClass = "bg-emerald-500/20 border-emerald-400/30 text-emerald-300";
+      } else if (score >= 120) {
+        rankText = "🌟 Excellent (Highly Proficient)";
+        rankClass = "bg-indigo-500/20 border-indigo-400/30 text-indigo-300";
+      } else if (score >= 100) {
+        rankText = "✨ Very Good (Competent)";
+        rankClass = "bg-sky-500/20 border-sky-400/30 text-sky-300";
+      } else if (score >= 75) {
+        rankText = "📈 Good (Developing)";
+        rankClass = "bg-amber-500/20 border-amber-400/30 text-amber-300";
+      } else {
+        rankText = "📚 Revise Topics (Beginner)";
+        rankClass = "bg-rose-500/20 border-rose-400/30 text-rose-300";
+      }
+      
+      const rBadge = document.getElementById("resultRankBadge");
+      rBadge.innerText = rankText;
+      rBadge.className = `${rankClass} font-bold text-xs tracking-wider uppercase px-4 py-1.5 rounded-full inline-block`;
+
+      // Set elapsed time
+      const totalSecondsUsed = (150 * 60) - timeRemaining;
+      const minsUsed = Math.floor(totalSecondsUsed / 60);
+      const secsUsed = totalSecondsUsed % 60;
+      document.getElementById("resultTime").innerText = `${minsUsed}m ${secsUsed}s`;
+
+      document.getElementById("resultCorrect").innerText = score;
+      document.getElementById("resultIncorrect").innerText = incorrect;
+      document.getElementById("resultUnanswered").innerText = unanswered;
+
+      // Render Topic Mastery Lines
+      const progBarsContainer = document.getElementById("topicProgressBars");
+      progBarsContainer.innerHTML = "";
+      
+      Object.keys(topicStats).forEach(topicKey => {
+        const stats = topicStats[topicKey];
+        const percent = ((stats.correct / stats.total) * 100).toFixed(1);
+        
+        const line = document.createElement("div");
+        line.className = "space-y-1.5";
+        line.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-700">${topicKey === 'Classification' ? 'Classification & Tabulation' : topicKey}</span>
+            <span class="font-mono font-bold text-slate-500">${stats.correct}/${stats.total} (${percent}%)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex">
+            <div class="bg-indigo-600 h-full rounded-full" style="width: ${percent}%"></div>
+          </div>
+        `;
+        progBarsContainer.appendChild(line);
+      });
+
+      // Render Question review list
+      renderReviewCards();
+    }
+
+    // Render Question Cards inside Diagnostic results
+    function renderReviewCards() {
+      const container = document.getElementById("reviewCardsContainer");
+      container.innerHTML = "";
+      
+      QUESTIONS_DATA.forEach(q => {
+        const choice = answers[q.id];
+        const isCorrect = choice === q.ans;
+        const isUnanswered = choice === undefined;
+        
+        // Filter checks
+        if (reviewFilter === "correct" && !isCorrect) return;
+        if (reviewFilter === "incorrect" && (isCorrect || isUnanswered)) return;
+        if (reviewFilter === "unanswered" && !isUnanswered) return;
+
+        const card = document.createElement("div");
+        
+        let cardBorder = "border-slate-200 bg-white";
+        let statusBadge = "";
+        
+        if (isUnanswered) {
+          cardBorder = "border-amber-200 bg-amber-50/20";
+          statusBadge = `<span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-xl font-bold shrink-0">Unanswered</span>`;
+        } else if (isCorrect) {
+          cardBorder = "border-emerald-200 bg-emerald-50/10";
+          statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-1 rounded-xl font-bold shrink-0">✓ Correct</span>`;
+        } else {
+          cardBorder = "border-rose-200 bg-rose-50/10";
+          statusBadge = `<span class="bg-rose-100 text-rose-800 text-xs px-2.5 py-1 rounded-xl font-bold shrink-0">✗ Incorrect</span>`;
+        }
+
+        card.className = `border ${cardBorder} p-5 rounded-2xl flex flex-col gap-4 shadow-sm transition`;
+        
+        // Form option blocks
+        let optionsHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">`;
+        Object.keys(q.options).forEach(optKey => {
+          const optVal = q.options[optKey];
+          let optStyle = "border-slate-200 bg-slate-50 text-slate-700";
+          
+          if (optKey === q.ans) {
+            optStyle = "border-emerald-500 bg-emerald-50 text-emerald-800 font-bold ring-1 ring-emerald-500";
+          } else if (choice === optKey) {
+            optStyle = "border-rose-500 bg-rose-50 text-rose-800 font-bold ring-1 ring-rose-500";
+          }
+          
+          optionsHTML += `
+            <div class="p-3 border rounded-xl flex items-center gap-2 ${optStyle}">
+              <span class="font-bold uppercase shrink-0">${optKey}:</span>
+              <span>${optVal}</span>
+            </div>
+          `;
+        });
+        optionsHTML += "</div>";
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-4">
+            <div class="space-y-1.5">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">${q.topic} • Q ${q.id}</span>
+              <h4 class="font-bold text-slate-900 leading-snug">${q.q}</h4>
+            </div>
+            ${statusBadge}
+          </div>
+          
+          ${optionsHTML}
+
+          <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl text-xs flex gap-2 text-slate-600">
+            <span class="text-base shrink-0">💡</span>
+            <div class="space-y-1">
+              <h5 class="font-bold text-slate-800">Explanation Note:</h5>
+              <p class="leading-relaxed">${q.explain}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Filter Review Cards
+    function filterReviewList(filter) {
+      reviewFilter = filter;
+      const btns = ["all", "correct", "incorrect", "unanswered"];
+      btns.forEach(b => {
+        const btn = document.getElementById(`revFilterBtn_${b}`);
+        if (b === filter) {
+          btn.className = "px-3 py-1.5 rounded-lg shadow-sm bg-white text-slate-800 font-bold whitespace-nowrap";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition whitespace-nowrap";
+        }
+      });
+      renderReviewCards();
+    }
+
+    // Reset simulator
+    function restartTest() {
+      localStorage.removeItem("statistics_test_state_bundle");
+      answers = {};
+      flags = new Set();
+      bookmarks = new Set();
+      currentIndex = 0;
+      timeRemaining = 150 * 60;
+      isPaused = false;
+      testSubmitted = false;
+      
+      document.getElementById("resultDashboard").classList.add("hidden");
+      document.getElementById("testDashboard").classList.remove("hidden");
+      document.getElementById("testDashboard").classList.add("lg:flex-1");
+      document.getElementById("testDashboard").classList.add("flex-grow");
+      document.getElementById("timerBox").classList.remove("hidden");
+      document.getElementById("modeContainer").classList.remove("hidden");
+      
+      initTimer();
+      renderBubbleSheet();
+      renderQuestionCard();
+      updateProgressBar();
+      
+      if (window.innerWidth >= 1024) {
+        document.getElementById('leftQuestionPanel').scrollTop = 0;
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // LocalStorage Synchronization
+    function saveState() {
+      if (testSubmitted) return;
+      const bundle = {
+        answers: answers,
+        flags: Array.from(flags),
+        bookmarks: Array.from(bookmarks),
+        currentIndex: currentIndex,
+        timeRemaining: timeRemaining,
+        studyMode: studyMode
+      };
+      localStorage.setItem("statistics_test_state_bundle", JSON.stringify(bundle));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem("statistics_test_state_bundle");
+      if (saved) {
+        try {
+          const bundle = JSON.parse(saved);
+          answers = bundle.answers || {};
+          flags = new Set(bundle.flags || []);
+          bookmarks = new Set(bundle.bookmarks || []);
+          currentIndex = bundle.currentIndex || 0;
+          timeRemaining = bundle.timeRemaining !== undefined ? bundle.timeRemaining : 150 * 60;
+          studyMode = !!bundle.studyMode;
+          
+          toggleStudyMode(studyMode);
+        } catch (e) {
+          console.error("Failed parsing session state package", e);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
