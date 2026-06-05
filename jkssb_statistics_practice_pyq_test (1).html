@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JKSSB Statistics Practice PyQ Test FAA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-200 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-sm transition-colors duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-600 text-white p-2 rounded-lg shadow-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">JKSSB Statistics PyQ Simulator</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Finance Accounts Assistant (FAA) Practice</p>
+                </div>
+            </div>
+
+            <!-- Header Action Items -->
+            <div class="flex items-center space-x-4">
+                <!-- Theme Toggle -->
+                <button id="themeToggleBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all text-slate-600 dark:text-slate-200" title="Toggle Theme">
+                    <!-- Sun Icon -->
+                    <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                    <!-- Moon Icon -->
+                    <svg id="moonIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                
+                <!-- Quick Reset -->
+                <button onclick="triggerResetConfirmation()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">
+                    Reset Test
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex flex-col md:flex-row gap-6 relative">
+        
+        <!-- Left Column: Core Application Panel -->
+        <div class="flex-grow flex flex-col gap-6 md:w-2/3 lg:w-3/4">
+            
+            <!-- Controller & Mode Selector Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-150 dark:border-slate-700 p-5 transition-all">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <!-- Mode Selector Tab Pills -->
+                    <div>
+                        <span class="block text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Practice Environment Mode</span>
+                        <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl">
+                            <button id="modePracticeBtn" onclick="switchMode('practice')" class="px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Practice Mode (Instant Answers)
+                            </button>
+                            <button id="modeExamBtn" onclick="switchMode('exam')" class="px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                                Exam Mode (Timed + Negative Marking)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timer Block (Active Only in Exam Mode) -->
+                    <div id="examTimerContainer" class="flex items-center gap-4 border-l border-slate-100 dark:border-slate-700 pl-4 invisible">
+                        <div class="text-right">
+                            <span class="block text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Remaining Exam Time</span>
+                            <div id="countdownDisplay" class="text-2xl font-mono font-bold tracking-tight text-indigo-600 dark:text-indigo-400">120:00</div>
+                        </div>
+                        <button id="pauseTimerBtn" onclick="toggleTimerState()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-slate-600 dark:text-slate-300" title="Pause / Play Exam">
+                            <svg id="timerPauseIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <svg id="timerPlayIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Progress Tracking Indicator -->
+                <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+                        <span class="font-medium">Overall Progress Profile</span>
+                        <span id="progressPercentDisplay" class="font-mono font-bold">0% Completed (0/133)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-900 h-2 rounded-full overflow-hidden">
+                        <div id="progressBarFill" class="bg-brand-600 dark:bg-brand-500 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Score Summary (Revealed after submission) -->
+            <div id="scoreReportCard" class="bg-gradient-to-br from-indigo-50 to-brand-50 dark:from-slate-800 dark:to-slate-850 rounded-2xl shadow-sm border border-brand-100 dark:border-slate-700 p-6 hidden">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span>🏆 Exam Performance Report</span>
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Official JKSSB valuation applied: Correct attempts gain +1.00; incorrect attempts penalized with -0.25 marks.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="exportResultToClipboard()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-white transition-all flex items-center gap-1.5">
+                            📋 Export Score Card
+                        </button>
+                        <button onclick="triggerResetConfirmation()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-brand-600 text-white hover:bg-brand-700 transition-all flex items-center gap-1">
+                            🔄 Restart Test
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid metrics -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 mt-6">
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm text-center">
+                        <span class="block text-xs font-medium text-slate-400">Total Marks</span>
+                        <span id="statFinalScore" class="block text-2xl font-black text-brand-600 dark:text-brand-400 mt-1">0.00</span>
+                        <span class="block text-[10px] text-slate-400">out of 133.00</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm text-center">
+                        <span class="block text-xs font-medium text-slate-400">Accuracy Rate</span>
+                        <span id="statAccuracy" class="block text-2xl font-black text-emerald-500 mt-1">0%</span>
+                        <span class="block text-[10px] text-slate-400">of attempted</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm text-center">
+                        <span class="block text-xs font-medium text-slate-400">Correct answers</span>
+                        <span id="statCorrectCount" class="block text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">0</span>
+                        <span class="block text-[10px] text-emerald-500/80 font-mono">+1.00 each</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm text-center">
+                        <span class="block text-xs font-medium text-slate-400">Incorrect answers</span>
+                        <span id="statIncorrectCount" class="block text-2xl font-black text-rose-500 mt-1 font-mono">0</span>
+                        <span class="block text-[10px] text-rose-500/85 font-mono">-0.25 penalty</span>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm text-center col-span-2 sm:col-span-1">
+                        <span class="block text-xs font-medium text-slate-400">Unattempted</span>
+                        <span id="statUnattemptedCount" class="block text-2xl font-black text-slate-500 mt-1">133</span>
+                        <span class="block text-[10px] text-slate-400">no penalty</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Single Question Active Viewer Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-150 dark:border-slate-700 p-6 md:p-8 relative transition-all min-h-[400px] flex flex-col justify-between">
+                
+                <!-- Question Top Header Action Bar -->
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-1 text-xs font-extrabold rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50 uppercase tracking-wider">
+                                Question <span id="questionBadgeId">1</span> of 133
+                            </span>
+                            <span id="practiceCorrectionIndicator" class="text-xs font-semibold px-2.5 py-1 rounded-lg border hidden"></span>
+                        </div>
+                        
+                        <!-- Question Action Utilities -->
+                        <div class="flex items-center space-x-2">
+                            <!-- Flag Indicator -->
+                            <button onclick="toggleFlag()" class="flex items-center space-x-1 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs transition-all" id="flagBtn">
+                                <svg id="flagIcon" class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+                                <span id="flagBtnText">Flag Question</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Text Container -->
+                    <div class="mb-8">
+                        <p id="questionTextDisplay" class="text-lg md:text-xl font-semibold leading-relaxed text-slate-900 dark:text-slate-50 select-text"></p>
+                    </div>
+
+                    <!-- Multiple Choice Container Grid -->
+                    <div id="optionsListGrid" class="grid grid-cols-1 gap-3.5">
+                        <!-- Options generated automatically via script -->
+                    </div>
+                </div>
+
+                <!-- Footer Nav Controls inside the card -->
+                <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button onclick="navigateQuestion(-1)" class="w-1/2 sm:w-auto px-5 py-2.5 text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1">
+                            ← Previous
+                        </button>
+                        <button onclick="navigateQuestion(1)" class="w-1/2 sm:w-auto px-5 py-2.5 text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all text-slate-700 dark:text-slate-200 flex items-center justify-center gap-1">
+                            Next →
+                        </button>
+                    </div>
+                    
+                    <button id="mainSubmitTestBtn" onclick="triggerSubmitConfirmation()" class="w-full sm:w-auto px-6 py-2.5 text-sm font-black rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all duration-150">
+                        Submit Complete Exam
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Right Column: Navigation Drawer & Question Selector Grid -->
+        <div class="md:w-1/3 lg:w-1/4 flex flex-col gap-6">
+            
+            <!-- Quick Navigation Panel -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-150 dark:border-slate-700 p-5 transition-all">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-700">
+                    <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <span>📊 Matrix Navigation</span>
+                    </h3>
+                    <span id="matrixCounterDisplay" class="text-xs font-mono font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">0/133</span>
+                </div>
+
+                <!-- Matrix Filtering Controls -->
+                <div class="mb-4">
+                    <select id="matrixFilterSelect" onchange="applyMatrixFilter()" class="w-full px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium text-slate-600 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-brand-500">
+                        <option value="all">View All Questions</option>
+                        <option value="attempted">View Attempted</option>
+                        <option value="unattempted">View Unattempted</option>
+                        <option value="flagged">View Flagged Only</option>
+                        <option value="correct" class="hidden">View Correctly Answered</option>
+                        <option value="incorrect" class="hidden">View Incorrectly Answered</option>
+                    </select>
+                </div>
+
+                <!-- Navigation Grid Core -->
+                <div id="navigatorGridContainer" class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-5 gap-2 max-h-[380px] overflow-y-auto pr-1">
+                    <!-- Nav buttons 1 to 133 populated via JS -->
+                </div>
+
+                <!-- Status Map Legend -->
+                <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700"></span>
+                        <span>Unvisited</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded bg-indigo-600 border border-indigo-600"></span>
+                        <span>Answered</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded bg-amber-500 border border-amber-500"></span>
+                        <span>Flagged</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded bg-indigo-100 dark:bg-slate-700 ring-2 ring-indigo-500"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Guide Help Panel -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-150 dark:border-slate-700 p-5 transition-all text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                <h4 class="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-1">
+                    <span>💡 Important Instructions</span>
+                </h4>
+                <ul class="space-y-2 list-disc pl-4">
+                    <li>This test contains official, unaltered pyqs for JKSSB FAA Statistics.</li>
+                    <li>Answers selected in both Practice and Exam modes auto-save continuously to your browser cache.</li>
+                    <li>To test under real conditions, use **Exam Mode** with a timer and strict immediate locking.</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Custom Popups / Confirmations Modals -->
+    <div id="customModalWrapper" class="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-150 dark:border-slate-700 p-6 w-full max-w-md shadow-2xl transform scale-95 transition-all duration-150" id="modalCard">
+            <h3 id="modalTitle" class="text-lg font-black text-slate-900 dark:text-white">Confirmation Required</h3>
+            <p id="modalDescription" class="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Are you absolutely sure you want to perform this action?</p>
+            <div class="mt-6 flex items-center justify-end space-x-3">
+                <button id="modalCancelBtn" onclick="closeCustomModal()" class="px-4 py-2 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all">Cancel</button>
+                <button id="modalConfirmBtn" class="px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-all">Proceed</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Dialog System -->
+    <div id="customToast" class="fixed bottom-6 right-6 z-50 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 max-w-sm border border-slate-700 dark:border-slate-100">
+        <span id="toastIcon">⚠️</span>
+        <p id="toastMessage" class="text-xs font-bold"></p>
+    </div>
+
+    <!-- Question Data and Engine Processing -->
+    <script>
+        // Full Dataset of all 133 Statistics questions matching the prompt perfectly
+        const questionsDataset = [
+            { id: 1, text: "What happens to the shape of a frequency polygon when the number of observations and classes increase?", options: ["Tends to become jagged", "Remains the same", "Tends to become increasingly smooth", "Varies if data becomes more reliable"], answer: "C" },
+            { id: 2, text: "For which of the following distribution the Z value and the observed value are same?", options: ["Binomial Distribution", "Standard Normal Distribution", "Lognormal Distribution", "Poisson Distribution"], answer: "B" },
+            { id: 3, text: "Weighted average of relatives if base year taken as weights gives:", options: ["Fisher Ideal Index", "Laspeyres Index", "Bowley Index", "Marshall & Edgeworth Index"], answer: "B" },
+            { id: 4, text: "The number of degrees of freedom for a 4×5 contingency table in a chi-square test is:", options: ["3", "6", "9", "12"], answer: "D" },
+            { id: 5, text: "The level of reproduction in the society is known as:", options: ["Mortality", "Fertility", "Migration", "Morbidity"], answer: "B" },
+            { id: 6, text: "Which of the following scale is used for qualitative phenomena?", options: ["Ordinal Scale", "Nominal Scale", "Interval Scale", "Ratio Scale"], answer: "A" },
+            { id: 7, text: "In which method, sampling frame is required to collect data?", options: ["Judgemental Sampling", "Simple Random Sampling", "Quota Sampling", "Snowball Sampling"], answer: "B" },
+            { id: 8, text: "Which of the following is the most suitable diagram for representing the age-sex structure of the population?", options: ["Dot Method", "Triangular Graph", "Pie Diagram", "Pyramid Diagram"], answer: "D" },
+            { id: 9, text: "Mid-point of class is equal to:", options: ["(Upper limit − Lower limit)/2", "(Upper limit + Lower limit)/2", "Upper limit + Lower limit", "Upper limit − Lower limit"], answer: "B" },
+            { id: 10, text: "The geometric mean of L and P indices is:", options: ["Fisher Ideal Index", "Bowley Index", "Marshall & Edgeworth Index", "Kelly Index"], answer: "A" },
+            { id: 11, text: "Primary data is collected from:", options: ["Newspapers", "First-hand investigation", "Magazines", "Internet"], answer: "B" },
+            { id: 12, text: "_____ questionnaire is the one in which the purpose of the research is obvious from the questions posed.", options: ["Close-ended", "Open", "Disguised", "Undisguised"], answer: "D" },
+            { id: 13, text: "If an attribute possesses more than two categories which cannot be arranged in any order, then it is termed as _____.", options: ["Nominal Data", "Ordinal Data", "Binary Data", "Ratio Data"], answer: "A" },
+            { id: 14, text: "What is sampling error? It is:", options: ["Population Parameter", "Sample Statistic", "Population Parameter + Sample Statistic", "The difference between population parameter and sample statistic"], answer: "D" },
+            { id: 15, text: "According to whom population increase in geometric progression while food production increase in arithmetic progression?", options: ["Malthus", "Keynes", "Robbins", "Bowley"], answer: "A" },
+            { id: 16, text: "Which type of sampling strategy is exemplified by selecting two types of individuals?", options: ["Interist", "Criterion", "Snowball", "Stratified"], answer: "A" },
+            { id: 17, text: "The relationship between three or more variables is studied with the help of _____ correlation.", options: ["Single", "Double", "Multiple", "Zero"], answer: "C" },
+            { id: 18, text: "In a moderately asymmetrical distribution, the mode and mean are _____ and _____ respectively.", options: ["35.2 and 35.4", "35.4 and 34.3", "44.3 and 43.4", "34.3 and 44.3"], answer: "B" },
+            { id: 19, text: "Which of the following is the case of Type II error?", options: ["The null hypothesis is true and rejected", "The null hypothesis is false and rejected", "The null hypothesis is true and accepted", "The null hypothesis is false and accepted"], answer: "D" },
+            { id: 20, text: "Counting of population is referred as:", options: ["Growth Rate", "Census", "Total Fertility Rate", "Total Mortality Rate"], answer: "B" },
+            { id: 21, text: "Which of the following is a method of gathering information from individuals?", options: ["Survey", "Testing", "Sampling", "Investigation"], answer: "A" },
+            { id: 22, text: "_____ achieves condensation of data by burying the value of the data.", options: ["Discrete Variable", "Class Mark", "Frequency Distribution", "Class Frequency"], answer: "C" },
+            { id: 23, text: "Closed-ended questions are also known as _____ questions.", options: ["Structured", "Unstructured", "Appropriate", "One-way"], answer: "A" },
+            { id: 24, text: "_____ can be measured in terms of presence or absence of certain characteristic or level of the quality present.", options: ["Avoidable Data", "Qualitative Data", "Quantitative Data", "Relevant Data"], answer: "B" },
+            { id: 25, text: "How many types of hypotheses are there?", options: ["One", "Two", "Three", "Four"], answer: "B" },
+            { id: 26, text: "The Crude Birth Rate is:", options: ["The average number of children in a society", "Based on the women between the age of 14 to 40 (Child bearing age)", "The average number of live births in a year on 1000 women population", "The average number of live births in a year on 1000 people of total population"], answer: "D" },
+            { id: 27, text: "How many methods are employed to measure the seasonal variations?", options: ["1", "2", "3", "4"], answer: "D" },
+            { id: 28, text: "Death rate computed for a particular specified section of the population is termed as _____ .", options: ["Standardised Death Rates", "Infant Death Rate", "Crude Death Rates", "Specific Death Rates"], answer: "D" },
+            { id: 29, text: "In a pyramid representation, female bars are usually on the _____.", options: ["Upward Direction", "Right Side", "Downward Direction", "Left Side"], answer: "B" },
+            { id: 30, text: "Bowley's Index is an average of Laspeyre's Index and _____.", options: ["Kelly's Index", "Fisher's Index", "Marshall-Edgeworth's Index", "Paasche's Index"], answer: "D" },
+            { id: 31, text: "What stage of demographic transition depicts the onset of industrialization?", options: ["Stage 1", "Stage 2", "Stage 3", "Stage 4"], answer: "B" },
+            { id: 32, text: "Which of the following scales is the highest level of scale?", options: ["Interval Scale", "Ratio Scale", "Ordinal Scale", "Nominal Scale"], answer: "B" },
+            { id: 33, text: "The pre-test should be done by the _____ regardless of the actual mode of administration that will be used.", options: ["Telephonic Interview", "Mailing", "Observation", "Personal Interview"], answer: "D" },
+            { id: 34, text: "The regression line of Y on X passes through the plotted points in such a manner that:", options: ["Σ(Xc − X) = 0", "Σ(Yc − Y) = 0", "Σ(Y − Yc) = 0", "Σ(X − Xc) = 0"], answer: "C" },
+            { id: 35, text: "Which of the following is a method used for collecting Secondary Data?", options: ["Experiments", "Personal Interview", "Questionnaire", "Government Publications"], answer: "D" },
+            { id: 36, text: "In questionnaire, respondents do not like a/an _____ question.", options: ["Easy", "Lengthy", "Simple", "Short"], answer: "B" },
+            { id: 37, text: "A car company manufacturing company is having a demand of 100 cars in September, 200 in October, 300 in November and 400 in December. Which moving average for January?", options: ["300", "350", "400", "450"], answer: "B" },
+            { id: 38, text: "If N = 200, and two independent attributes have frequencies A = 100 and B = 140, then (AB) = ?", options: ["60", "70", "80", "90"], answer: "B" },
+            { id: 39, text: "Which statement is true about the sampling error?", options: ["It decreases as sample size increases", "It does not depend on population size under study", "It cannot be reduced by an appropriate sampling plan", "It cannot be measured and controlled in probability sample"], answer: "A" },
+            { id: 40, text: "Calculate mode for: 13, 3, 5, 8, 11, 5, 13, 5, 11, 9, 12, 4, 9", options: ["1", "5", "11", "3"], answer: "B" },
+            { id: 41, text: "In which of the following scales, we conclude that one category is superior to the other?", options: ["Ratio Scale", "Ordinal Scale", "Interval Scale", "Nominal Scale"], answer: "B" },
+            { id: 42, text: "Which of the following is an advantage of General Fertility Rate?", options: ["It gives a heterogeneous figure", "It is simple", "It is not comparable", "It is a probability rate"], answer: "B" },
+            { id: 43, text: "Binary type qualitative data is also termed as:", options: ["Contingent", "Manifold", "Dichotomous", "Cross-sectional"], answer: "C" },
+            { id: 44, text: "_____ leads to fallacious conclusions as it inflates the number of potential mothers.", options: ["General Fertility Rate", "Gross Reproduction Rate", "Specific Fertility Rate", "Net Reproduction Rate"], answer: "B" },
+            { id: 45, text: "Under primary data, enquiries have to be conducted to gather the data.", options: ["Old", "Confidential", "Irrelevant", "Fresh"], answer: "D" },
+            { id: 46, text: "In _____ data are arranged on the basis of their ranks or quality.", options: ["Nominal Scale", "Ratio Scale", "Ordinal Scale", "Interval Scale"], answer: "C" },
+            { id: 47, text: "If the mean of 3, 5, 6, 10, 12 and D is 7, then calculate the value of D.", options: ["7", "8", "6", "9"], answer: "C" },
+            { id: 48, text: "Theoretically, the best average in the construction of index number is:", options: ["Harmonic Mean", "Median", "Mode", "Geometric Mean"], answer: "D" },
+            { id: 49, text: "_____ include such sources that the decision maker is associated with.", options: ["External Sources", "Internal Sources", "International Organisation", "National Organisations"], answer: "B" },
+            { id: 50, text: "The number of observations corresponding to a particular class is known as:", options: ["Class Mark", "Class Frequency", "Class Interval", "Class Limits"], answer: "B" },
+            { id: 51, text: "Fisher's Ideal Index is:", options: ["Median of Laspeyre's and Paasche's index", "Average of Laspeyre's and Paasche's index", "Geometric Mean of Laspeyre's and Paasche's index", "Harmonic Mean of Laspeyre's and Paasche's index"], answer: "C" },
+            { id: 52, text: "In correlation analysis, coefficient of determination is defined as:", options: ["r²", "r", "1 − r²", "r³"], answer: "A" },
+            { id: 53, text: "Which of the following test is satisfied when PEA + PEB = 1?", options: ["Factor Reversal Test", "Unit Test", "Circular Test", "Time Reversal Test"], answer: "C" },
+            { id: 54, text: "The _____ should be clearly defined and placed at the middle of the column.", options: ["Headnote", "Footnote", "Caption", "Stub"], answer: "C" },
+            { id: 55, text: "The _____ is defined as the chance of dying of a newly born infant within a year of its life under given mortality conditions.", options: ["Standardised Death Rate", "Specific Death Rate", "Crude Death Rate", "Infant Mortality Rate"], answer: "D" },
+            { id: 56, text: "_____ refers to a set of printed questions along with space for answers.", options: ["Personal Interview", "Observation", "Telephonic Interview", "Questionnaire"], answer: "D" },
+            { id: 57, text: "If the measurements are taken over two different attributes for the same set of individuals, then the data are used as:", options: ["Attribute Tables", "Compiled Tables", "Contingency Tables", "Dependent Tables"], answer: "C" },
+            { id: 58, text: "Data which were collected earlier for purposes other than the present investigation are known as:", options: ["Confidential Data", "Nominal Data", "Secondary Data", "Primary Data"], answer: "C" },
+            { id: 59, text: "In a _____, two or more characteristics are shown.", options: ["Simple Table", "Special Purpose Table", "General Purpose Table", "Complex Table"], answer: "D" },
+            { id: 60, text: "Which rate completely ignores the age and sex distribution of the population?", options: ["Standardised Death Rate", "Specific Death Rate", "Crude Death Rate", "Infant Death Rate"], answer: "C" },
+            { id: 61, text: "Which of the following reveals average relationship between two variables?", options: ["Regression Analysis", "Measures of Dispersion", "Correlation Analysis", "Measures of Central Tendency"], answer: "A" },
+            { id: 62, text: "Which of the following tables serve as repository of information and are arranged for easy reference?", options: ["Simple Tables", "Complex Tables", "General Purpose Tables", "Specific Purpose Tables"], answer: "C" },
+            { id: 63, text: "Regression analysis reveals average relationship between _____ variables.", options: ["One", "Two", "Three", "Zero"], answer: "B" },
+            { id: 64, text: "The median of 36, 72, 49, 45, 60, 33, 61, 72, 52 is:", options: ["52", "60", "45", "33"], answer: "A" },
+            { id: 65, text: "When the data to be collected are very large in volume, then it is possible to draw reasonably accurate conclusions from the study of a small portion of the group. This is called:", options: ["Questionnaire", "Observation", "Population", "Sample"], answer: "D" },
+            { id: 66, text: "_____ consists in relating the total number of live births to the number of females in the reproductive or child-bearing ages.", options: ["Crude Fertility Rate", "General Fertility Rate", "Total Fertility Rate", "Specific Fertility Rate"], answer: "B" },
+            { id: 67, text: "(AB), (AY) etc. are class frequencies of _____ .", options: ["Two-order", "Three-order", "Zero-order", "One-order"], answer: "A" },
+            { id: 68, text: "If r = 0.6, σx = 4 and byx = 0.8, then calculate σy.", options: ["4", "3", "2", "1"], answer: "B" },
+            { id: 69, text: "The child-woman ratio relates the number of children aged _____ to women in their reproductive period at a given point of time.", options: ["More than 20 years", "Not more than 3 years", "Less than 5 years", "More than 35 years"], answer: "C" },
+            { id: 70, text: "Female crude death rate generally _____ male crude death rate.", options: ["Is more than", "Is less than", "Does not affect", "Affects"], answer: "B" },
+            { id: 71, text: "The mean of 99 items is 55. The value of the 100th item is 99 more than the mean of 100 items. What is the value of the 100th item?", options: ["155", "99", "100", "56"], answer: "A" },
+            { id: 72, text: "Geographical classification means classification of data according to:", options: ["Location", "Attributes", "Degree", "Class-intervals"], answer: "A" },
+            { id: 73, text: "Age, marriage and migration affects:", options: ["Crude fertility rate", "General fertility rate", "Total fertility rate", "Specific fertility rate"], answer: "D" },
+            { id: 74, text: "In dichotomous type of questionnaire:", options: ["Respondent can use any type of language", "There is one answer as good/bad, yes/no etc.", "Respondent has full freedom", "Open-ended questions are used"], answer: "B" },
+            { id: 75, text: "While preparing questionnaire, words and language used in questions should be:", options: ["Confidential and simple", "Complex and confidential", "Complex and clear", "Simple and clear"], answer: "D" },
+            { id: 76, text: "In a series of values, if one value is zero, then geometric mean is:", options: ["Infinite", "One", "Zero", "Undefined"], answer: "C" },
+            { id: 77, text: "Special purpose tables are also known as:", options: ["Pilot tables", "Two-way tables", "One-way tables", "Summary tables"], answer: "D" },
+            { id: 78, text: "The mean marks of 100 students were found to be 40. Later, one mark was discovered to be recorded as 53 instead of 33. Calculate the corrected mean.", options: ["38.7", "37.7", "39.7", "40.7"], answer: "C" },
+            { id: 79, text: "The categories or attributes are termed as class and their frequencies are termed as:", options: ["Distributive frequencies", "Average frequencies", "Total frequencies", "Class frequencies"], answer: "D" },
+            { id: 80, text: "Which of the following approaches would follow fertility rates diagonally?", options: ["Progression approach", "Cross-sectional approach", "Standardized approach", "Longitudinal approach"], answer: "D" },
+            { id: 81, text: "_____ of data constitutes the last step in a statistical investigation.", options: ["Organization", "Collection", "Presentation", "Interpretation"], answer: "D" },
+            { id: 82, text: "_____ is/are done in which interviewer obtains information from respondents in face-to-face meeting.", options: ["Questionnaire", "Mails", "Telephonic calls", "Personal Interview"], answer: "D" },
+            { id: 83, text: "Persons who are enumerated at a place other than their birthplace are termed as:", options: ["Movers", "Transfers", "Lifetime migrants", "Shifters"], answer: "C" },
+            { id: 84, text: "If a particular question needs clarification, then it should be marked or noted and the explanation should be provided in:", options: ["Subject", "Headnotes", "Footnotes", "Covering letter"], answer: "C" },
+            { id: 85, text: "Data collected originally for the present investigation are referred to as:", options: ["Confidential data", "Primary data", "Secondary data", "Present data"], answer: "B" },
+            { id: 86, text: "_____ is broadly thought of as the movement by individuals, groups or populations seeking to make relatively permanent changes of residence.", options: ["Fertility", "Migration", "Mortality", "Transfer"], answer: "B" },
+            { id: 87, text: "_____ questionnaire refers to the degree of standardization imposed on the questionnaire.", options: ["Unstructured", "Structured", "Balanced", "Unbalanced"], answer: "B" },
+            { id: 88, text: "If the data values are recorded in chronological order, then data is called:", options: ["Cross-sectional data", "Time series data", "Bivariate data", "Univariate data"], answer: "B" },
+            { id: 89, text: "A _____ questionnaire attempts to hide the purpose of the study.", options: ["Disguised", "Undisguised", "Biased", "Balanced"], answer: "A" },
+            { id: 90, text: "_____ is/are the lowest and the highest values that can be included in the class.", options: ["Class intervals", "Class mark", "Class limits", "Class frequency"], answer: "C" },
+            { id: 91, text: "Time and motion study is the example of:", options: ["Observation", "Interview", "Mail", "Questionnaire"], answer: "A" },
+            { id: 92, text: "If an attribute possesses more than two categories which can be arranged in ascending order, then it is termed as:", options: ["Nominal data", "Internal data", "Ordinal data", "Binary data"], answer: "C" },
+            { id: 93, text: "In chronological classification, data are classified on the basis of:", options: ["Time", "Location", "Attributes", "Class-interval"], answer: "A" },
+            { id: 94, text: "Schedules contain questions which are asked by enumerators from respondents but the answers are filled in by:", options: ["Respondents", "Enumerators", "Government", "Employees"], answer: "B" },
+            { id: 95, text: "If the data have been collected and processed by some other agency, then it is called:", options: ["Secondary data", "Ordinary data", "Primary data", "Nominal data"], answer: "A" },
+            { id: 96, text: "_____ are the designations of the rows of a table.", options: ["Captions", "Footnotes", "Headnotes", "Stubs"], answer: "D" },
+            { id: 97, text: "Which of the following questionnaires are simple to administer and easy to tabulate and analyse?", options: ["Unstructured undisguised", "Unstructured disguised", "Structured disguised", "Structured undisguised"], answer: "D" },
+            { id: 98, text: "To measure the strength of relationship among two attributes, the measures of _____ are used.", options: ["Correlation", "Deviations", "Regression", "Associations"], answer: "D" },
+            { id: 99, text: "Telephonic interviews are used for:", options: ["Complex interviews", "Large interviews", "Observing gestures and body language", "Small or repetitive interviews"], answer: "D" },
+            { id: 100, text: "Which of the following is a source of primary data?", options: ["National organisation", "External source", "Observation", "Internal source"], answer: "C" },
+            { id: 101, text: "Laspeyre's Index gives a/an _____ bias.", options: ["Downward", "Horizontal", "Upward", "Diagonal"], answer: "C" },
+            { id: 102, text: "In which type of questionnaire, questions are answered in one of the two options?", options: ["Dichotomous", "Multiple choice", "Open-ended", "Close-ended"], answer: "A" },
+            { id: 103, text: "If Birth Rate > Death Rate, then there is a/an _____ trend.", options: ["Constant", "Horizontal", "Decreasing", "Increasing"], answer: "D" },
+            { id: 104, text: "A patient in a hospital may have 102-degree Celsius fever; this is an example of:", options: ["Interval Scale", "Ratio Scale", "Ordinal Scale", "Nominal Scale"], answer: "A" },
+            { id: 105, text: "The nominal and ordinal type of qualitative data are also termed as:", options: ["Manifold", "Contingent", "Dichotomous", "Associative"], answer: "A" },
+            { id: 106, text: "Which of the following helps in assessing the suitability of questions, clarity of instructions, performance of enumerators and the cost and time involved in the actual survey?", options: ["Technical survey", "Pilot survey", "Post survey", "Unit survey"], answer: "B" },
+            { id: 107, text: "The _____ is that value in a series of observations which occurs with greatest frequency.", options: ["Mode", "Geometric Mean", "Median", "Arithmetic Mean"], answer: "A" },
+            { id: 108, text: "If the order of recording is not chronological, then data set is:", options: ["Time series", "Uni-variate", "Cross-sectional", "Bi-variate"], answer: "C" },
+            { id: 109, text: "Which method results in biasness because of researcher perception?", options: ["Simple random sampling", "Stratified sampling", "Snowball sampling", "Judgemental sampling"], answer: "D" },
+            { id: 110, text: "The coefficient of correlation is independent of change of scale and:", options: ["Origin", "Multiple", "Linear", "Error"], answer: "A" },
+            { id: 111, text: "While preparing questionnaire, questions should be:", options: ["Complex", "Long", "Logically arranged", "Sensitive"], answer: "C" },
+            { id: 112, text: "_____ are conventional numerical records of marriages, births, sickness and deaths by which the health and growth of a community may be studied under:", options: ["Vital Statistics", "Business Statistics", "Business Studies", "Economic Statistics"], answer: "A" },
+            { id: 113, text: "The circular test will be satisfied if:", options: ["P01 × P12 × P20 = 1", "P01 × P21 × P12 = 1", "P01 × P12 × P20 = 0", "P01 × P21 × P20 = 1"], answer: "A" },
+            { id: 114, text: "Given the zero growth of the life table, population is also known as a _____ population.", options: ["Moving", "Dispersed", "Stationary", "Skewed"], answer: "C" },
+            { id: 115, text: "If somebody uses the data collected by you for a similar study, then it becomes:", options: ["Primary Data", "Secondary Data", "Private Data", "Irrelevant Data"], answer: "B" },
+            { id: 116, text: "The _____ relates a geographical area to the population living in it.", options: ["Population Survey", "Population Census", "Population Density", "Population Redistribution"], answer: "C" },
+            { id: 117, text: "_____ refers to the degree of standardisation imposed on the questionnaire.", options: ["Undisguised", "Unstructured", "Structured", "Structure"], answer: "C" },
+            { id: 118, text: "Which data type is used to measure the temperature of the city?", options: ["Interval Scale", "Ordinal Scale", "Nominal Scale", "Ratio Scale"], answer: "A" },
+            { id: 119, text: "In _____ data, attribute under study cannot be measured.", options: ["Bivariate", "Uni-variate", "Quantitative", "Qualitative"], answer: "D" },
+            { id: 120, text: "Which method is based on categorisation and heterogeneous groups?", options: ["Stratified Sampling", "Quota Sampling", "Snowball Sampling", "Simple Random Sampling"], answer: "A" },
+            { id: 121, text: "If the distribution attributes possess two attributes, it is termed as:", options: ["Positive Class", "Negative Class", "Plural Class", "Singular Class"], answer: "D" },
+            { id: 122, text: "The _____ is defined as the chance of dying of a newly born infant within a year of its life, under the given mortality conditions.", options: ["Infant Death Rate", "Standardised Death Rate", "Specific Death Rate", "Crude Death Rate"], answer: "A" },
+            { id: 123, text: "_____ measures the extent to which mothers produce female infants who survive to replace them.", options: ["Net Reproduction Rate", "General Fertility Rate", "Total Fertility Rate", "Gross Reproduction Rate"], answer: "A" },
+            { id: 124, text: "_____ classification refers to the classification of data according to some characteristics that can be quantitatively measured.", options: ["Cross-sectional", "Qualitative", "Uni-variate", "Quantitative"], answer: "D" },
+            { id: 125, text: "Both the regression coefficients cannot exceed:", options: ["Two", "Three", "One", "Zero"], answer: "C" },
+            { id: 126, text: "In Statistics, the term _____ is used to represent the data which is measured in terms of some quality or qualities.", options: ["Regression", "Demography", "Attribute", "Correlation"], answer: "C" },
+            { id: 127, text: "Financial and manufacturing records are _____ source of secondary data.", options: ["Internal", "External", "Primary", "Other"], answer: "A" },
+            { id: 128, text: "The variable we are trying to predict is called the:", options: ["Positive Variable", "Negative Variable", "Dependent Variable", "Independent Variable"], answer: "C" },
+            { id: 129, text: "The number of live births per thousand population in a given year is:", options: ["Crude Birth Rate", "Total Fertility Rate", "Mortality Rate", "Morbidity Rate"], answer: "A" },
+            { id: 130, text: "In a pyramid representation, male bars are usually on the:", options: ["Upward Direction", "Right Side", "Left Side", "Downward Direction"], answer: "C" },
+            { id: 131, text: "_____ refers to the sum of all variables divided by the number of variables.", options: ["Mode", "Median", "Geometric Mean", "Arithmetic Mean"], answer: "D" },
+            { id: 132, text: "Demographers use the crude birth rate as an indicator of:", options: ["Crude Birth Rate", "Crude Death Rate", "Fertility Rate", "Mortality Rate"], answer: "C" },
+            { id: 133, text: "If the population standard deviation is 20 and the sample size is 16, then the standard error of mean will be:", options: ["5", "1.5", "6", "6.25"], answer: "A" }
+        ];
+
+        // System Configuration State
+        const STORAGE_KEY = 'jkssb_statistics_test_state';
+        let state = {
+            answers: {},          // key-value pair of {questionId: "A"/"B"/"C"/"D"}
+            flags: [],            // array of flagged questionIds
+            timeRemaining: 7200,  // Default: 120 minutes (7200 seconds)
+            mode: 'practice',     // 'practice' or 'exam'
+            status: 'idle',       // 'idle', 'started', 'submitted'
+            currentIndex: 0       // index of active question
+        };
+
+        let timerInterval = null;
+
+        // On Document Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Theme setup
+            initTheme();
+            // Restore Storage
+            loadLocalState();
+            // Create Navigation Grid
+            renderNavigatorGrid();
+            // Render Current Question
+            renderActiveQuestion();
+            // Synchronize Progress indicators
+            syncProgressIndicators();
+            // Initial render of options and buttons states
+            updateUIState();
+        });
+
+        // Local Storage State Managers
+        function saveLocalState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function loadLocalState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                    // Check if exam timer was already working
+                    if (state.mode === 'exam' && state.status === 'started') {
+                        startTimer();
+                    }
+                } catch (e) {
+                    console.error("Error parsing local state, resetting configuration.", e);
+                }
+            }
+        }
+
+        // Theme management
+        function initTheme() {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('sunIcon').classList.toggle('hidden', !isDark);
+            document.getElementById('moonIcon').classList.toggle('hidden', isDark);
+
+            document.getElementById('themeToggleBtn').addEventListener('click', () => {
+                const isCurrentlyDark = document.documentElement.classList.contains('dark');
+                if (isCurrentlyDark) {
+                    document.documentElement.classList.remove('dark');
+                    document.getElementById('sunIcon').classList.add('hidden');
+                    document.getElementById('moonIcon').classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    document.getElementById('sunIcon').classList.remove('hidden');
+                    document.getElementById('moonIcon').classList.add('hidden');
+                }
+            });
+        }
+
+        // Active Question Renderer
+        function renderActiveQuestion() {
+            const question = questionsDataset[state.currentIndex];
+            
+            // Set question title & text
+            document.getElementById('questionBadgeId').innerText = question.id;
+            document.getElementById('questionTextDisplay').innerText = `Q${question.id}. ${question.text}`;
+
+            // Reset correction badge UI (for practice mode)
+            const badge = document.getElementById('practiceCorrectionIndicator');
+            badge.classList.add('hidden');
+
+            // Set Flag State Button Visuals
+            const isFlagged = state.flags.includes(question.id);
+            const flagBtn = document.getElementById('flagBtn');
+            const flagIcon = document.getElementById('flagIcon');
+            const flagBtnText = document.getElementById('flagBtnText');
+
+            if (isFlagged) {
+                flagBtn.classList.remove('text-slate-500', 'dark:text-slate-400');
+                flagBtn.classList.add('text-amber-500', 'bg-amber-50', 'dark:bg-amber-950/40', 'border-amber-200');
+                flagIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>`;
+                flagIcon.setAttribute('class', 'w-4 h-4 text-amber-500');
+                flagBtnText.innerText = 'Flagged';
+            } else {
+                flagBtn.className = "flex items-center space-x-1 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs transition-all";
+                flagIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path>`;
+                flagIcon.setAttribute('class', 'w-4 h-4 text-slate-400');
+                flagBtnText.innerText = 'Flag Question';
+            }
+
+            // Generate MCQ option buttons dynamically
+            const grid = document.getElementById('optionsListGrid');
+            grid.innerHTML = '';
+
+            const alphabet = ['A', 'B', 'C', 'D'];
+            const userChoice = state.answers[question.id];
+
+            question.options.forEach((opt, idx) => {
+                const letter = alphabet[idx];
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border transition-all duration-150 flex items-center justify-between group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500/50 ";
+                btn.onclick = () => selectOption(question.id, letter);
+
+                let defaultStyle = "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-slate-50/50 dark:bg-slate-900/40";
+                let badgeStyle = "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+
+                // Visual updates based on Mode and Selection state
+                if (state.mode === 'practice') {
+                    if (userChoice) {
+                        // Answer is evaluated instantly
+                        if (letter === question.answer) {
+                            // This is the correct answer
+                            defaultStyle = "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 text-emerald-900 dark:text-emerald-200";
+                            badgeStyle = "bg-emerald-500 text-white";
+                        } else if (letter === userChoice) {
+                            // User selected incorrect answer
+                            defaultStyle = "border-rose-500 bg-rose-50/30 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200";
+                            badgeStyle = "bg-rose-500 text-white";
+                        } else {
+                            // Unselected options are muted
+                            defaultStyle = "border-slate-100 dark:border-slate-800 opacity-60 bg-transparent text-slate-400 dark:text-slate-500";
+                        }
+                    } else {
+                        // Normal unattempted practice mode card state
+                        defaultStyle = "border-slate-200 dark:border-slate-700 hover:bg-slate-100/50 dark:hover:bg-slate-700/40 text-slate-700 dark:text-slate-200";
+                    }
+                } else {
+                    // EXAM MODE
+                    if (state.status === 'submitted') {
+                        // Post-Exam review styling
+                        if (letter === question.answer) {
+                            defaultStyle = "border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 text-emerald-900 dark:text-emerald-200";
+                            badgeStyle = "bg-emerald-500 text-white";
+                        } else if (letter === userChoice) {
+                            defaultStyle = "border-rose-500 bg-rose-50/30 dark:bg-rose-950/20 text-rose-900 dark:text-rose-200";
+                            badgeStyle = "bg-rose-500 text-white";
+                        } else {
+                            defaultStyle = "border-slate-100 dark:border-slate-800 opacity-60 bg-transparent text-slate-400 dark:text-slate-500";
+                        }
+                    } else {
+                        // Regular timed active exam styling
+                        if (letter === userChoice) {
+                            defaultStyle = "border-brand-500 bg-indigo-50/50 dark:bg-brand-900/25 text-brand-900 dark:text-brand-100 font-medium ring-1 ring-brand-500";
+                            badgeStyle = "bg-brand-600 text-white";
+                        } else {
+                            defaultStyle = "border-slate-200 dark:border-slate-700 hover:bg-slate-100/50 dark:hover:bg-slate-700/40 text-slate-700 dark:text-slate-200";
+                        }
+                    }
+                }
+
+                btn.className += defaultStyle;
+
+                // Option Inner HTML Structuring
+                btn.innerHTML = `
+                    <div class="flex items-center space-x-3.5">
+                        <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all duration-150 ${badgeStyle}">${letter}</span>
+                        <span class="text-sm font-medium pr-2 select-text">${opt}</span>
+                    </div>
+                `;
+
+                // Add indicator icon if answered
+                if (state.mode === 'practice' && userChoice) {
+                    if (letter === question.answer) {
+                        btn.innerHTML += `<span class="text-emerald-600 dark:text-emerald-400">✔️ Correct</span>`;
+                    } else if (letter === userChoice) {
+                        btn.innerHTML += `<span class="text-rose-600 dark:text-rose-400">❌ Incorrect</span>`;
+                    }
+                } else if (state.status === 'submitted') {
+                    if (letter === question.answer) {
+                        btn.innerHTML += `<span class="text-emerald-600 dark:text-emerald-400">✔️ Key</span>`;
+                    } else if (letter === userChoice) {
+                        btn.innerHTML += `<span class="text-rose-600 dark:text-rose-400 font-mono">Incorrect</span>`;
+                    }
+                }
+
+                // Append
+                grid.appendChild(btn);
+            });
+
+            // Set dynamic message inside the Correction Indicator
+            if (state.mode === 'practice' && userChoice) {
+                badge.classList.remove('hidden');
+                if (userChoice === question.answer) {
+                    badge.innerText = "Correct Attempt";
+                    badge.className = "text-xs font-semibold px-2.5 py-1 rounded-lg border bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/50";
+                } else {
+                    badge.innerText = `Incorrect Option. Correct answer is (${question.answer})`;
+                    badge.className = "text-xs font-semibold px-2.5 py-1 rounded-lg border bg-rose-50 border-rose-200 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/50";
+                }
+            }
+
+            // Sync visual active ring on the current matrix cell
+            document.querySelectorAll('.matrix-cell').forEach(cell => {
+                cell.classList.remove('ring-4', 'ring-brand-500/80', 'ring-offset-2', 'dark:ring-offset-slate-900', 'scale-105');
+            });
+            const activeCell = document.getElementById(`matrix-cell-${question.id}`);
+            if (activeCell) {
+                activeCell.classList.add('ring-4', 'ring-brand-500/80', 'ring-offset-2', 'dark:ring-offset-slate-900', 'scale-105');
+            }
+        }
+
+        // Active selection processing
+        function selectOption(qId, selectedLetter) {
+            // Check validation based on mode & submission
+            if (state.mode === 'practice' && state.answers[qId]) {
+                // In Practice mode, prevent re-selecting after evaluation
+                showToast("This question is already evaluated. Reset test to start fresh.", "⚠️");
+                return;
+            }
+            if (state.status === 'submitted') {
+                showToast("The test has been submitted. No changes can be made during review.", "🚫");
+                return;
+            }
+
+            // If exam has not officially started yet in Exam mode, trigger start automatically
+            if (state.mode === 'exam' && state.status === 'idle') {
+                state.status = 'started';
+                startTimer();
+                showToast("The countdown timer has started. Best of luck!", "⏱️");
+            }
+
+            state.answers[qId] = selectedLetter;
+            saveLocalState();
+            
+            // Sync overall visuals
+            renderActiveQuestion();
+            updateMatrixCellState(qId);
+            syncProgressIndicators();
+        }
+
+        // Update individual matrix navigator item styling
+        function updateMatrixCellState(qId) {
+            const cell = document.getElementById(`matrix-cell-${qId}`);
+            if (!cell) return;
+
+            const userChoice = state.answers[qId];
+            const isFlagged = state.flags.includes(qId);
+            const questionObj = questionsDataset.find(q => q.id === qId);
+
+            // Default State
+            let styleClass = "bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-850";
+
+            if (state.status === 'submitted') {
+                if (!userChoice) {
+                    styleClass = "bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-400";
+                } else if (userChoice === questionObj.answer) {
+                    styleClass = "bg-emerald-500 text-white font-bold";
+                } else {
+                    styleClass = "bg-rose-500 text-white font-bold";
+                }
+            } else {
+                if (isFlagged) {
+                    styleClass = "bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-sm";
+                } else if (userChoice) {
+                    styleClass = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-sm";
+                }
+            }
+
+            cell.className = `matrix-cell w-full aspect-square flex items-center justify-center rounded-lg text-xs font-semibold tracking-wide transition-all cursor-pointer ${styleClass}`;
+        }
+
+        // Generate full 133 Matrix grid structure
+        function renderNavigatorGrid() {
+            const container = document.getElementById('navigatorGridContainer');
+            container.innerHTML = '';
+
+            questionsDataset.forEach(q => {
+                const cell = document.createElement('div');
+                cell.id = `matrix-cell-${q.id}`;
+                cell.innerText = q.id;
+                cell.onclick = () => jumpToQuestion(q.id - 1);
+                container.appendChild(cell);
+                updateMatrixCellState(q.id);
+            });
+        }
+
+        // Jump directly
+        function jumpToQuestion(index) {
+            if (index < 0 || index >= questionsDataset.length) return;
+            state.currentIndex = index;
+            saveLocalState();
+            renderActiveQuestion();
+        }
+
+        // Navigate step-by-step
+        function navigateQuestion(direction) {
+            let nextIndex = state.currentIndex + direction;
+            if (nextIndex < 0) {
+                showToast("You are on the first question.", "ℹ️");
+                return;
+            }
+            if (nextIndex >= questionsDataset.length) {
+                showToast("You have reached the end. Submit the test if you are done.", "ℹ️");
+                return;
+            }
+            jumpToQuestion(nextIndex);
+        }
+
+        // Toggle Flag State
+        function toggleFlag() {
+            const qId = questionsDataset[state.currentIndex].id;
+            const index = state.flags.indexOf(qId);
+            if (index > -1) {
+                state.flags.splice(index, 1);
+                showToast("Flag removed", "🏳️");
+            } else {
+                state.flags.push(qId);
+                showToast("Question flagged for review", "🏳️");
+            }
+            saveLocalState();
+            renderActiveQuestion();
+            updateMatrixCellState(qId);
+        }
+
+        // Synchronize top and side progress bars & labels
+        function syncProgressIndicators() {
+            const totalQuestions = questionsDataset.length;
+            const answeredCount = Object.keys(state.answers).length;
+            const percent = Math.round((answeredCount / totalQuestions) * 100);
+
+            document.getElementById('progressPercentDisplay').innerText = `${percent}% Completed (${answeredCount}/${totalQuestions})`;
+            document.getElementById('progressBarFill').style.width = `${percent}%`;
+            document.getElementById('matrixCounterDisplay').innerText = `${answeredCount}/${totalQuestions}`;
+        }
+
+        // Core mode changing handler
+        function switchMode(selectedMode) {
+            if (state.mode === selectedMode) return;
+
+            if (selectedMode === 'exam' && Object.keys(state.answers).length > 0 && state.status !== 'submitted') {
+                // Prompt user that switching to Exam mode clears practice session
+                triggerCustomModal(
+                    "Switch to Exam Mode?",
+                    "Entering Exam mode requires starting a clean timed session. Your current practice answers will be wiped.",
+                    () => {
+                        performHardReset('exam');
+                        closeCustomModal();
+                    }
+                );
+            } else {
+                state.mode = selectedMode;
+                saveLocalState();
+                updateUIState();
+                renderActiveQuestion();
+                renderNavigatorGrid();
+            }
+        }
+
+        // Updates visibility & styles depending on Mode status
+        function updateUIState() {
+            const isPractice = state.mode === 'practice';
+            
+            // Buttons visual toggling
+            const practiceBtn = document.getElementById('modePracticeBtn');
+            const examBtn = document.getElementById('modeExamBtn');
+
+            if (isPractice) {
+                practiceBtn.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm";
+                examBtn.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-transparent";
+                document.getElementById('examTimerContainer').classList.add('invisible');
+                document.getElementById('mainSubmitTestBtn').classList.add('hidden');
+                document.getElementById('scoreReportCard').classList.add('hidden');
+                stopTimer();
+            } else {
+                examBtn.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm";
+                practiceBtn.className = "px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-transparent";
+                document.getElementById('examTimerContainer').classList.remove('invisible');
+                
+                if (state.status === 'submitted') {
+                    document.getElementById('mainSubmitTestBtn').classList.add('hidden');
+                    document.getElementById('scoreReportCard').classList.remove('hidden');
+                    calculateAndDisplayScore();
+                } else {
+                    document.getElementById('mainSubmitTestBtn').classList.remove('hidden');
+                    document.getElementById('scoreReportCard').classList.add('hidden');
+                    if (state.status === 'started') {
+                        startTimer();
+                    }
+                }
+            }
+
+            // Sync grid option filters
+            document.querySelectorAll("#matrixFilterSelect option").forEach(opt => {
+                if (opt.value === 'correct' || opt.value === 'incorrect') {
+                    if (state.status === 'submitted') opt.classList.remove('hidden');
+                    else opt.classList.add('hidden');
+                }
+            });
+        }
+
+        // Active timer controls
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                if (state.timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitExam();
+                    return;
+                }
+                state.timeRemaining--;
+                saveLocalState();
+                updateTimerDisplay();
+
+                // Dynamic alerting at 10 minutes (600 seconds)
+                if (state.timeRemaining === 600) {
+                    showToast("Alert! 10 minutes remaining in exam.", "⏰");
+                    document.getElementById('countdownDisplay').classList.add('animate-pulse', 'text-rose-500');
+                }
+            }, 1000);
+
+            document.getElementById('timerPauseIcon').classList.remove('hidden');
+            document.getElementById('timerPlayIcon').classList.add('hidden');
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            document.getElementById('timerPauseIcon').classList.add('hidden');
+            document.getElementById('timerPlayIcon').classList.remove('hidden');
+        }
+
+        function toggleTimerState() {
+            if (state.status !== 'started') {
+                showToast("The exam is not active or has been completed.", "⚠️");
+                return;
+            }
+            if (timerInterval) {
+                stopTimer();
+                showToast("Exam timer paused.", "⏸️");
+            } else {
+                startTimer();
+                showToast("Exam timer resumed.", "▶️");
+            }
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(state.timeRemaining / 60);
+            const secs = state.timeRemaining % 60;
+            document.getElementById('countdownDisplay').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Submission processors
+        function triggerSubmitConfirmation() {
+            const totalAnswered = Object.keys(state.answers).length;
+            const totalQuestions = questionsDataset.length;
+            const unanswered = totalQuestions - totalAnswered;
+
+            let promptMsg = `You have answered ${totalAnswered} of ${totalQuestions} questions. `;
+            if (unanswered > 0) {
+                promptMsg += `Warning: ${unanswered} questions will be scored as unattempted (0 marks). `;
+            }
+            promptMsg += "Are you ready to submit your test papers for official scoring?";
+
+            triggerCustomModal(
+                "Submit Exam?",
+                promptMsg,
+                () => {
+                    performExamSubmission();
+                    closeCustomModal();
+                }
+            );
+        }
+
+        function autoSubmitExam() {
+            stopTimer();
+            state.status = 'submitted';
+            saveLocalState();
+            updateUIState();
+            renderActiveQuestion();
+            renderNavigatorGrid();
+            showToast("Time has expired. Your exam was submitted automatically.", "🚨");
+        }
+
+        function performExamSubmission() {
+            stopTimer();
+            state.status = 'submitted';
+            saveLocalState();
+            updateUIState();
+            renderActiveQuestion();
+            renderNavigatorGrid();
+            showToast("Your test papers have been registered and scored successfully.", "🎉");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Score formulation
+        function calculateAndDisplayScore() {
+            let correct = 0;
+            let incorrect = 0;
+            let unattempted = 0;
+
+            questionsDataset.forEach(q => {
+                const choice = state.answers[q.id];
+                if (!choice) {
+                    unattempted++;
+                } else if (choice === q.answer) {
+                    correct++;
+                } else {
+                    incorrect++;
+                }
+            });
+
+            // JKSSB Formula: Marks = (Correct * 1) - (Incorrect * 0.25)
+            const rawScore = (correct * 1.0) - (incorrect * 0.25);
+            const finalScore = Math.max(-33.25, rawScore).toFixed(2); // lowest possible score is 133 * -0.25 = -33.25
+
+            const totalAttempted = correct + incorrect;
+            const accuracy = totalAttempted > 0 ? Math.round((correct / totalAttempted) * 100) : 0;
+
+            // Render stats card updates
+            document.getElementById('statFinalScore').innerText = finalScore;
+            document.getElementById('statAccuracy').innerText = `${accuracy}%`;
+            document.getElementById('statCorrectCount').innerText = correct;
+            document.getElementById('statIncorrectCount').innerText = incorrect;
+            document.getElementById('statUnattemptedCount').innerText = unattempted;
+        }
+
+        // Reset system triggers
+        function triggerResetConfirmation() {
+            triggerCustomModal(
+                "Reset Simulator?",
+                "Are you sure you want to discard your progress and clear all answered questions? This action cannot be undone.",
+                () => {
+                    performHardReset(state.mode);
+                    closeCustomModal();
+                    showToast("Test environment reset complete.", "🔄");
+                }
+            );
+        }
+
+        function performHardReset(selectedMode = 'practice') {
+            stopTimer();
+            state = {
+                answers: {},
+                flags: [],
+                timeRemaining: 7200,
+                mode: selectedMode,
+                status: 'idle',
+                currentIndex: 0
+            };
+            saveLocalState();
+            
+            // Re-render UI completely
+            updateUIState();
+            renderActiveQuestion();
+            renderNavigatorGrid();
+            syncProgressIndicators();
+        }
+
+        // Grid view filter implementation
+        function applyMatrixFilter() {
+            const filterValue = document.getElementById('matrixFilterSelect').value;
+            const cells = document.querySelectorAll('.matrix-cell');
+
+            cells.forEach(cell => {
+                const qId = parseInt(cell.id.replace('matrix-cell-', ''));
+                const userChoice = state.answers[qId];
+                const isFlagged = state.flags.includes(qId);
+                const questionObj = questionsDataset.find(q => q.id === qId);
+
+                let show = true;
+
+                if (filterValue === 'attempted' && !userChoice) show = false;
+                if (filterValue === 'unattempted' && userChoice) show = false;
+                if (filterValue === 'flagged' && !isFlagged) show = false;
+                if (filterValue === 'correct') {
+                    if (!userChoice || userChoice !== questionObj.answer) show = false;
+                }
+                if (filterValue === 'incorrect') {
+                    if (!userChoice || userChoice === questionObj.answer) show = false;
+                }
+
+                if (show) {
+                    cell.style.display = 'flex';
+                } else {
+                    cell.style.display = 'none';
+                }
+            });
+        }
+
+        // Keyboard Navigation Listener
+        document.addEventListener('keydown', (e) => {
+            // Left Arrow: Previous question
+            if (e.key === 'ArrowLeft') {
+                navigateQuestion(-1);
+            }
+            // Right Arrow: Next question
+            if (e.key === 'ArrowRight') {
+                navigateQuestion(1);
+            }
+            // Letter keys A, B, C, D: Quick select options
+            if (['a', 'b', 'c', 'd', 'A', 'B', 'C', 'D'].includes(e.key)) {
+                if (state.status === 'submitted') return;
+                const letter = e.key.toUpperCase();
+                const qId = questionsDataset[state.currentIndex].id;
+                selectOption(qId, letter);
+            }
+            // F key: Toggle Flag
+            if (e.key.toLowerCase() === 'f') {
+                toggleFlag();
+            }
+        });
+
+        // Copy scorecard to clipboard
+        function exportResultToClipboard() {
+            let correct = 0, incorrect = 0, unattempted = 0;
+            questionsDataset.forEach(q => {
+                const choice = state.answers[q.id];
+                if (!choice) unattempted++;
+                else if (choice === q.answer) correct++;
+                else incorrect++;
+            });
+            const score = ((correct * 1.0) - (incorrect * 0.25)).toFixed(2);
+
+            const report = `=== JKSSB STATISTICS PYQ EXAM REPORT ===\n` +
+                           `Mode: Exam Mode\n` +
+                           `Score Achieved: ${score} / 133.00 Marks\n` +
+                           `Accuracy: ${correct + incorrect > 0 ? Math.round((correct / (correct+incorrect)) * 100) : 0}%\n` +
+                           `Correct Answers: ${correct}\n` +
+                           `Incorrect Answers: ${incorrect}\n` +
+                           `Unattempted Questions: ${unattempted}\n` +
+                           `=======================================`;
+
+            // Standard fallback copier technique as requested in system instructions
+            const textarea = document.createElement('textarea');
+            textarea.value = report;
+            textarea.style.position = 'fixed'; // Avoid scrolling to bottom
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast("Scorecard copied to clipboard!", "📋");
+                } else {
+                    showToast("Unable to copy. Try selecting manually.", "❌");
+                }
+            } catch (err) {
+                showToast("System error copying clipboard.", "❌");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Custom Modal Controller Actions
+        let modalConfirmCallback = null;
+
+        function triggerCustomModal(title, text, confirmCallback) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDescription').innerText = text;
+            modalConfirmCallback = confirmCallback;
+
+            const wrapper = document.getElementById('customModalWrapper');
+            const card = document.getElementById('modalCard');
+
+            wrapper.classList.remove('hidden');
+            wrapper.classList.add('flex');
+            setTimeout(() => {
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            }, 50);
+        }
+
+        function closeCustomModal() {
+            const wrapper = document.getElementById('customModalWrapper');
+            const card = document.getElementById('modalCard');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                wrapper.classList.remove('flex');
+                wrapper.classList.add('hidden');
+            }, 100);
+        }
+
+        // Attach action click to proceed button
+        document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+            if (modalConfirmCallback) modalConfirmCallback();
+        });
+
+        // Toast Messages Notification Utility
+        function showToast(message, icon = "🔔") {
+            const toast = document.getElementById('customToast');
+            document.getElementById('toastIcon').innerText = icon;
+            document.getElementById('toastMessage').innerText = message;
+
+            // Trigger In Animation
+            toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            // Dismiss Timer
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
